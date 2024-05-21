@@ -1,12 +1,13 @@
-import requests, bs4
-#from gazpacho import Soup
+import requests
+#, bs4
+from gazpacho import Soup
 
 wochentage = { \
  "Mo" : "Montag", "Di": "Dienstag", "Mi": "Mittwoch", \
  "Do":"Donnerstag", "Fr": "Freitag", "Sa": "Samstag", "So": "Sonntag" \
 }
 
-class rbbText:
+class rbbWeather:
     tablepattern = "\xa0\xa0\xa0\xa0"
     content = ""
     weekdays = []
@@ -44,13 +45,13 @@ class rbbText:
             page = 100
         res = requests.get('https://www.rbbtext.de/'+str(page))
         res.raise_for_status()
-        #bs4
-        soup = bs4.BeautifulSoup(res.text, features="html.parser")
-        peas = soup.find_all("span", class_=["fgw", "fgc", "fgy", "fgm", "fgr" ])
+        #gazpacho
+        soup = Soup(res.text)
+        peas = soup.find("span", {"class": "fg"}, partial=True
         
         lines = [self.__filter(x.text) for x in peas]
-        #lines = [x for x in stuff]
         
+        # process and prettify text
         # make sentences from table
         if expectTable:
             for x in lines:
@@ -73,9 +74,9 @@ class rbbText:
 # Tonight and tomorrow
 print("Wetter: ")
 
-textHeute = rbbText(162, False)
+textHeute = rbbWeather(162, False)
 print(textHeute.content)
 print("")
 print("Aussichten: ")
-textAussichten = rbbText(163, True)
+textAussichten = rbbWeather(163, True)
 print(textAussichten.content)
