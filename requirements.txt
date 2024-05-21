@@ -1,0 +1,7 @@
+pyjokes==0.6.0
+pyttsx3==2.90
+pywhatkit==5.4
+wikipedia==1.4.0
+SpeechRecognition==3.10.4
+PyAudio==0.2.14
+gazpacho==1.1

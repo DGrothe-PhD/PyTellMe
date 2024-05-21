@@ -14,7 +14,7 @@ class rbbText:
         res.raise_for_status()
         #gazpacho
         soup = Soup(res.text)
-        peas = soup.find("span", {"class": "fg"}, partial=True
+        peas = soup.find("span", {"class": "fg"}, partial=True)
         lines = [self.__filter(x.text) for x in peas]
         
         # process and prettify text
