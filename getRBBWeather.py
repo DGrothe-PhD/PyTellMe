@@ -7,6 +7,7 @@ wochentage = { \
 }
 
 class rbbText:
+    tablepattern = "\xa0\xa0\xa0\xa0"
     content = ""
     weekdays = []
     mintemps = []
@@ -55,14 +56,13 @@ class rbbText:
             for x in lines:
                 if x.__contains__("&nbsp;&nbsp;&nbsp;&nbsp;"):
                     self.extractTable(x)
-                elif x.__contains__("\xa0\xa0\xa0\xa0"):
-                    self.extractTable(x, "\xa0\xa0\xa0\xa0")
+                elif x.__contains__(self.tablepattern):
+                    self.extractTable(x, self.tablepattern)
                 elif len(str(x)) > 1 :
                     self.content += '\n' + str(x)
             for i in range(0, len(self.weekdays)):
-                self.content += '\n' + \
-                 wochentage[self.weekdays[i]] + f" morgens {self.mintemps[i]}, "
-                self.content += "maximal "+ str(self.maxtemps[i]) + " Grad, Niederschlagswahrscheinlichkeit " + \
+                self.content += f"\n{wochentage[self.weekdays[i]]} morgens {self.mintemps[i]}, "
+                self.content += f"maximal {str(self.maxtemps[i])} Grad, Niederschlagswahrscheinlichkeit " + \
                  f"{self.rainexpect[i]} Prozent."
         else:
             for x in lines:
@@ -75,7 +75,7 @@ print("Wetter: ")
 
 textHeute = rbbText(162, False)
 print(textHeute.content)
-
+print("")
 print("Aussichten: ")
 textAussichten = rbbText(163, True)
 print(textAussichten.content)
