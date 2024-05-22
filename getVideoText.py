@@ -7,6 +7,7 @@ limitation = "Bis jetzt kann ich nur den RBB-Text."
 class videotextStatus:
     isRunning = True
     page = 100
+    textNews = rbbText(page)
 
 print(welcome)
 print(limitation)
@@ -19,14 +20,16 @@ while videotextStatus.isRunning:
         if newpage == "stop":
             videotextStatus.isRunning = False
             continue
+        elif newpage[0] == '/':
+            videotextStatus.page = videotextStatus.textNews.bluePage
+        elif newpage[0] == '*':
+            videotextStatus.page = videotextStatus.textNews.yellowPage
+        # forward and back
         elif newpage[0] == '-':
-            print(f"page: {videotextStatus.page}")
             videotextStatus.page = 100 if (videotextStatus.page <= 101) else videotextStatus.page - 1
-            print(f"Zurückblättern zu Seite {videotextStatus.page}")
         elif newpage[0] == '+':
-            print(f"page: {videotextStatus.page}")
             videotextStatus.page = 100 if (videotextStatus.page >= 899) else videotextStatus.page + 1 
-            print(f"Vorblättern zu Seite {videotextStatus.page}")
+        #
         elif not newpage.isdigit():
             print("Sorry, das ist keine Seitenzahl.")
             continue
@@ -34,8 +37,9 @@ while videotextStatus.isRunning:
             videotextStatus.page = int(newpage)
         
         # browse page
-        textNews = rbbText(int(videotextStatus.page))
-        print(textNews.content)
+        videotextStatus.textNews.extractAndPreparePage(int(videotextStatus.page))
+        print(f"Blättern zu Seite {videotextStatus.page}")
+        print(videotextStatus.textNews.content)
         #
     except Exception as e:
         # HTTP error or anything
