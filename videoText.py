@@ -26,11 +26,11 @@ class rbbText:
         self.bluePage = 100
         self.lines = []
     
-    def extractPage(self, page):
+    def extractPage(self, page, sub=0):
         self.clearValues()
         if page > 899 or page < 100:
             page = 100
-        res = requests.get(self.api+str(page))
+        res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >0 else ""))
         res.raise_for_status()
         #gazpacho
         self.soup = Soup(res.text)
@@ -61,8 +61,8 @@ class rbbText:
             self.content += "Seite ist leer."
         self.content = self.content.replace('-\n', '')
         
-    def extractAndPreparePage(self, page):
-        self.extractPage(page)
+    def extractAndPreparePage(self, page, sub=0):
+        self.extractPage(page, sub)
         self.appendContent()
         self.extractJumpingPages()
     
@@ -70,7 +70,7 @@ class rbbText:
         self.extractAndPreparePage(page)
 
 class ardText(rbbText):
-    api = 'https://www.ard-text.de/'
+    api = 'https://www.ard-text.de/index.php?page='
 
 class rbbWeather(rbbText):
     tablepattern = "\xa0\xa0\xa0\xa0"
@@ -104,7 +104,6 @@ class rbbWeather(rbbText):
     
     def __init__(self, page, expectTable=False):
         self.extractPage(page)
-        
         # process and prettify text
         # make sentences from table
         if expectTable:

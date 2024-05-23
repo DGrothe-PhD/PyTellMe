@@ -7,6 +7,7 @@ limitation = "Bis jetzt kann ich nur den ARD- und den RBB-Text."
 class videotextStatus:
     isRunning = True
     page = 100
+    sub = 0
     textNews = rbbText(page)
 
 
@@ -25,6 +26,15 @@ while videotextStatus.isRunning:
     #
     try:
         newpage = input("Welche Seite möchtest du lesen?")
+        if newpage[0] == '>' or newpage == ' ':
+            videotextStatus.sub += 1
+            videotextStatus.textNews.extractAndPreparePage(int(videotextStatus.page), videotextStatus.sub)
+            print(f"Blättern zu Seite {videotextStatus.page}")
+            print(videotextStatus.textNews.content)
+            continue
+        
+        # show new page
+        videotextStatus.sub = 0
         if newpage == "stop":
             videotextStatus.isRunning = False
             continue
