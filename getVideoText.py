@@ -1,16 +1,24 @@
-from videoText import rbbText
+from videoText import rbbText, ardText
 # todo: from ... import applied speaker
 
 welcome = "Hallo, ich bin dein Videotext-Assistent.\n\n Eingabe Seitenzahl (dreistellig), Beenden durch die Eingabe 'stop'."
-limitation = "Bis jetzt kann ich nur den RBB-Text."
+limitation = "Bis jetzt kann ich nur den ARD- und den RBB-Text."
 
 class videotextStatus:
     isRunning = True
     page = 100
     textNews = rbbText(page)
 
+
 print(welcome)
 print(limitation)
+
+stationlist_erste = {"1", "das erste", "ard"}
+station = input("Welchen Sendetext möchten Sie aufrufen?" + "\n Bsp.: " + ", ".join(stationlist_erste))
+if station.lower() in stationlist_erste:
+    videotextStatus.textNews = ardText(100)
+else:
+    pass
 
 while videotextStatus.isRunning:
     print("...")

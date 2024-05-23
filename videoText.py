@@ -10,21 +10,47 @@ class videoTextUtils:
 
 class rbbText:
     content = ""
+    yellowPage = 100
+    bluePage = 100
     soup = Soup()
     lines = []
+    
+    api = 'https://www.rbbtext.de/'
     
     def linefilter(self, text):
         return text.rstrip(' \xa0')
     
+    def clearValues(self):
+        self.content = ""
+        self.yellowPage = 100
+        self.bluePage = 100
+        self.lines = []
+    
     def extractPage(self, page):
+        self.clearValues()
         if page > 899 or page < 100:
             page = 100
-        res = requests.get('https://www.rbbtext.de/'+str(page))
+        res = requests.get(self.api+str(page))
         res.raise_for_status()
         #gazpacho
         self.soup = Soup(res.text)
         peas = self.soup.find("span", {"class": "fg"}, partial=True)
         self.lines = [self.linefilter(x.text) for x in peas]
+    
+    def extractJumpingPages(self):
+        yellowbean = self.soup.find("span", {"class": "block_yellow"})
+        if type(yellowbean) == list and len(yellowbean) > 0:
+            yellowlink = yellowbean.find("a")
+            if len(yellowlink.text) > 1:
+                self.yellowPage = int(yellowlink.attrs.get("href").strip('/'))
+                self.content += f"\nSternchen blättert zu {yellowlink.text} auf Seite {self.yellowPage}"
+        
+        bluebean = self.soup.find("span", {"class": "block_blue"})
+        if type(bluebean) == list and len(bluebean) > 0:
+            bluelink = bluebean.find("a")
+            if len(bluelink.text) > 1:
+                self.bluePage = int(bluelink.attrs.get("href").strip('/'))
+                self.content += f"\nDivisionstaste blättert zu {bluelink.text} auf Seite {self.bluePage}"
     
     def appendContent(self):
         # process and prettify text
@@ -35,9 +61,16 @@ class rbbText:
             self.content += "Seite ist leer."
         self.content = self.content.replace('-\n', '')
         
-    def __init__(self, page):
+    def extractAndPreparePage(self, page):
         self.extractPage(page)
         self.appendContent()
+        self.extractJumpingPages()
+    
+    def __init__(self, page):
+        self.extractAndPreparePage(page)
+
+class ardText(rbbText):
+    api = 'https://www.ard-text.de/'
 
 class rbbWeather(rbbText):
     tablepattern = "\xa0\xa0\xa0\xa0"
@@ -89,3 +122,4 @@ class rbbWeather(rbbText):
                  f"{self.rainexpect[i]} Prozent."
         else:
             self.appendContent()
+        self.extractJumpingPages()
