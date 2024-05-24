@@ -121,4 +121,5 @@ class rbbWeather(rbbText):
                  f"{self.rainexpect[i]} Prozent."
         else:
             self.appendContent()
+        self.content = self.content.replace('-\n', '')
         self.extractJumpingPages()
