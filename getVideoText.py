@@ -7,7 +7,7 @@ limitation = "Bis jetzt kann ich nur eine Auswahl von Videotexten."
 class videotextStatus:
     isRunning = True
     page = 100
-    sub = 0
+    sub = 1
     textNews = rbbText(page)
 
 
@@ -17,7 +17,11 @@ print(limitation)
 stationlist_erste = {"1", "das erste", "ard"}
 stationlist_ndr = {"nord", "ndr"}
 stationlist_bayern = {"bayern", "br"}
-stationlist_examples = {"Das Erste" : stationlist_erste, "NDR" : stationlist_ndr, "BR" : stationlist_bayern}
+stationlist_examples = { \
+ "Das Erste" : stationlist_erste,
+ "NDR" : stationlist_ndr,
+ "BR" : stationlist_bayern
+}
 #
 examples = []
 for k in stationlist_examples.keys():
@@ -49,7 +53,7 @@ while videotextStatus.isRunning:
             continue
         
         # show new page
-        videotextStatus.sub = 0
+        videotextStatus.sub = 1
         if newpage == "stop":
             videotextStatus.isRunning = False
             continue

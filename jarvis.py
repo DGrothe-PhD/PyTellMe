@@ -7,6 +7,10 @@ import wikipedia
 import pyjokes
 import traceback
 
+from videoText import rbbWeather
+from videoText import rbbText
+from videoText import ardText
+
 ## We'll set German wikipedia as default.
 wikipedia.set_lang("de")
 locale.setlocale(locale.LC_TIME, "de_DE")
@@ -72,11 +76,11 @@ def run_jarvis():
         print(time)
         talk(f"Es ist jetzt {time} Uhr.")
 
-    elif 'wer' in command:
-        person = command.replace('wer', '')
+    elif 'wikipedia' in command:
+        person = command.replace('wikipedia', '')
         utilities.search_wikipedia(person)
 
-    elif 'was' in command:
+'''    elif 'was' in command:
         person = command.replace('was', '')
         utilities.search_wikipedia(person)
 
@@ -87,7 +91,7 @@ def run_jarvis():
     elif 'wo' in command:
         person = command.replace('wo', '')
         utilities.search_wikipedia(person)
-
+'''
     elif 'zeige alle' in command:
         for person in status.wikifound:
             utilities.search_wikipedia(person, True)
@@ -99,6 +103,19 @@ def run_jarvis():
         date = datetime.datetime.now().strftime('%W. KW, %A den %d. %B %Y')
         print(date)
         talk(date)
+    
+    elif 'wetter' in command:
+        print("Wetter: ")
+        textHeute = rbbWeather(162, False)
+        print(textHeute.content)
+        talk(textHeute.content)
+        talk("Weiter zu den Aussichten mit beliebiger Taste.")
+        q = input("Weiter zu den Aussichten mit beliebiger Taste: ")
+        print("Aussichten: ")
+        talk("Aussichten: ")
+        textAussichten = rbbWeather(163, True)
+        print(textAussichten.content)
+        talk(textAussichten.content)
 
     elif 'stop listening'.__eq__(command):
         talk('Bye, until next time.')
