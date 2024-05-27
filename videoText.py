@@ -1,4 +1,5 @@
 import requests
+import re
 #, bs4
 from gazpacho import Soup
 
@@ -14,6 +15,8 @@ class rbbText:
     bluePage = 100
     soup = Soup()
     lines = []
+    peas = None
+    peas_style = None
     
     api = 'https://www.rbbtext.de/'
     
@@ -25,28 +28,61 @@ class rbbText:
         self.yellowPage = 100
         self.bluePage = 100
         self.lines = []
+        self.peas = None
+        self.peas_style = None
+    
+    def checkSoup(self, contents):
+        return type(contents) == list and len(contents) > 0
+    
+    def validateSoup(self, contents):
+        if type(contents) == list and len(contents) > 0:
+            return contents
+        elif type(contents) == Soup:
+            return [contents]
+        else:
+            return []
     
     def extractPage(self, page, sub=0):
         self.clearValues()
         if page > 899 or page < 100:
             page = 100
-        res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >0 else ""))
+        if self.api.__contains__('#'):
+            res = requests.get(self.api.replace('#', str(page)))
+        else:
+            res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >0 else ""))
         res.raise_for_status()
         #gazpacho
         self.soup = Soup(res.text)
         peas = self.soup.find("span", {"class": "fg"}, partial=True)
-        self.lines = [self.linefilter(x.text) for x in peas]
+        peas_style = self.soup.find("span", {"class" : "style"}, partial=True)
+        #
+        # the easiest way to get rid of TypeError for empty soup
+        #try:
+        self.lines += [self.linefilter(x.text) for x in self.validateSoup(peas)]
+        #except:
+        #    pass
+        
+        for x in self.validateSoup(peas_style):
+            addline = self.linefilter(x.text)
+            alist = x.find("a")
+            alist = self.validateSoup(alist)
+            
+            for y in alist:
+                if len(y.html) > 1:
+                    linked_pages = re.findall("\d+", y.html)
+                    addline += " " + linked_pages[-1]
+            self.lines.append(addline)
     
     def extractJumpingPages(self):
         yellowbean = self.soup.find("span", {"class": "block_yellow"})
-        if type(yellowbean) == list and len(yellowbean) > 0:
+        if self.checkSoup(yellowbean):
             yellowlink = yellowbean.find("a")
             if len(yellowlink.text) > 1:
                 self.yellowPage = int(yellowlink.attrs.get("href").strip('/'))
                 self.content += f"\nSternchen blättert zu {yellowlink.text} auf Seite {self.yellowPage}"
         
         bluebean = self.soup.find("span", {"class": "block_blue"})
-        if type(bluebean) == list and len(bluebean) > 0:
+        if self.checkSoup(bluebean):
             bluelink = bluebean.find("a")
             if len(bluelink.text) > 1:
                 self.bluePage = int(bluelink.attrs.get("href").strip('/'))
@@ -69,8 +105,18 @@ class rbbText:
     def __init__(self, page):
         self.extractAndPreparePage(page)
 
+
+
 class ardText(rbbText):
     api = 'https://www.ard-text.de/index.php?page='
+
+class ndrText(rbbText):
+    api = 'https://www.ndr.de/public/teletext/#.htm'
+
+class bayernText(rbbText):
+    api = 'https://www.br.de/fernsehen/brtext/brtext-100.html?vtxpage='
+
+
 
 class rbbWeather(rbbText):
     tablepattern = "\xa0\xa0\xa0\xa0"

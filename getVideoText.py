@@ -1,8 +1,8 @@
-from videoText import rbbText, ardText
+from videoText import rbbText, ardText, bayernText, ndrText
 # todo: from ... import applied speaker
 
 welcome = "Hallo, ich bin dein Videotext-Assistent.\n\n Eingabe Seitenzahl (dreistellig), Beenden durch die Eingabe 'stop'."
-limitation = "Bis jetzt kann ich nur den ARD- und den RBB-Text."
+limitation = "Bis jetzt kann ich nur eine Auswahl von Videotexten."
 
 class videotextStatus:
     isRunning = True
@@ -15,9 +15,24 @@ print(welcome)
 print(limitation)
 
 stationlist_erste = {"1", "das erste", "ard"}
-station = input("Welchen Sendetext möchten Sie aufrufen?" + "\n Bsp.: " + ", ".join(stationlist_erste))
+stationlist_ndr = {"nord", "ndr"}
+stationlist_bayern = {"bayern", "br"}
+stationlist_examples = {"Das Erste" : stationlist_erste, "NDR" : stationlist_ndr, "BR" : stationlist_bayern}
+#
+examples = []
+for k in stationlist_examples.keys():
+    examples.append(f"{k}:  {', '.join(stationlist_examples[k])}")
+
+tell_available_stations = "\n".join(examples)
+station = input("Welchen Sendetext möchten Sie aufrufen?\n[  Beispiele:  ]\n" + tell_available_stations + "\n...:")
+#
+#
 if station.lower() in stationlist_erste:
     videotextStatus.textNews = ardText(100)
+elif station.lower() in stationlist_ndr:
+    videotextStatus.textNews = ndrText(100)
+elif station.lower() in stationlist_bayern:
+    videotextStatus.textNews = bayernText(100)
 else:
     pass
 
