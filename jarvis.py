@@ -80,18 +80,26 @@ def run_jarvis():
         person = command.replace('wikipedia', '')
         utilities.search_wikipedia(person)
 
-'''    elif 'was' in command:
-        person = command.replace('was', '')
-        utilities.search_wikipedia(person)
-
-    elif 'wann' in command:
-        person = command.replace('wann', '')
-        utilities.search_wikipedia(person)
-
-    elif 'wo' in command:
-        person = command.replace('wo', '')
-        utilities.search_wikipedia(person)
-'''
+    elif 'mdax' in command:
+        textMDAX = ardText(716)
+        print(textMDAX.content)
+        #talk(textMDAX.content)
+        return
+        textMDAX2 = textMDAX.extractAndPreparePage(716, 2)
+        print(textMDAX2.content)
+        #talk(textMDAX2.content)
+    #elif 'was' in command:
+    #    person = command.replace('was', '')
+    #    utilities.search_wikipedia(person)
+    #
+    #elif 'wann' in command:
+    #    person = command.replace('wann', '')
+    #    utilities.search_wikipedia(person)
+    #
+    #elif 'wo' in command:
+    #    person = command.replace('wo', '')
+    #    utilities.search_wikipedia(person)
+    
     elif 'zeige alle' in command:
         for person in status.wikifound:
             utilities.search_wikipedia(person, True)
