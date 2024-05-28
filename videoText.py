@@ -111,7 +111,9 @@ class ardText(rbbText):
     api = 'https://www.ard-text.de/index.php?page='
 
 class ndrText(rbbText):
-    api = 'https://www.ndr.de/public/teletext/#.htm'
+    #api = https://www.ndr.de/public/teletext/521_01.htm
+    #api = 'https://www.ndr.de/fernsehen/videotext/index.html'
+    api = 'https://www.ndr.de/fernsehen/videotext/ndr5478.html?seite='
 
 class bayernText(rbbText):
     api = 'https://www.br.de/fernsehen/brtext/brtext-100.html?vtxpage='

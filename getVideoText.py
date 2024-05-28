@@ -19,7 +19,7 @@ stationlist_ndr = {"nord", "ndr"}
 stationlist_bayern = {"bayern", "br"}
 stationlist_examples = { \
  "Das Erste" : stationlist_erste,
- "NDR" : stationlist_ndr,
+ #"NDR" : stationlist_ndr,
  "BR" : stationlist_bayern
 }
 #
