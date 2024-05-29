@@ -42,48 +42,50 @@ class rbbText:
         else:
             return []
     
-    def extractPage(self, page, sub=0):
+    def extractPage(self, page, sub=1):
         self.clearValues()
         if page > 899 or page < 100:
             page = 100
         if self.api.__contains__('#'):
             res = requests.get(self.api.replace('#', str(page)))
         else:
-            res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >0 else ""))
+            res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >1 else ""))
         res.raise_for_status()
         #gazpacho
         self.soup = Soup(res.text)
+        
         peas = self.soup.find("span", {"class": "fg"}, partial=True)
         peas_style = self.soup.find("span", {"class" : "style"}, partial=True)
         #
         # the easiest way to get rid of TypeError for empty soup
-        #try:
-        self.lines += [self.linefilter(x.text) for x in self.validateSoup(peas)]
-        #except:
-        #    pass
-        
-        for x in self.validateSoup(peas_style):
-            addline = self.linefilter(x.text)
-            alist = x.find("a")
-            alist = self.validateSoup(alist)
+        try:
+            self.lines += [self.linefilter(x.text) for x in self.validateSoup(peas)]
+            # gather info like 'Thema xyz on page 123'
+            for x in self.validateSoup(peas_style):
+                addline = self.linefilter(x.text)
+                alist = x.find("a")
+                alist = self.validateSoup(alist)
             
-            for y in alist:
-                if len(y.html) > 1:
-                    linked_pages = re.findall("\d+", y.html)
-                    addline += " " + linked_pages[-1]
-            self.lines.append(addline)
+                for y in alist:
+                    if len(y.html) > 1:
+                        linked_pages = re.findall("\d+", y.html)
+                        addline += " " + linked_pages[-1]
+                self.lines.append(addline)
+        except:
+            print("Something went wrong.")
     
     def extractJumpingPages(self):
         yellowbean = self.soup.find("span", {"class": "block_yellow"})
-        if self.checkSoup(yellowbean):
-            yellowlink = yellowbean.find("a")
+        if len(self.validateSoup(yellowbean)) > 0:
+            yellowlink = self.validateSoup(yellowbean.find("a"))[0]
             if len(yellowlink.text) > 1:
                 self.yellowPage = int(yellowlink.attrs.get("href").strip('/'))
                 self.content += f"\nSternchen blättert zu {yellowlink.text} auf Seite {self.yellowPage}"
-        
+        #
         bluebean = self.soup.find("span", {"class": "block_blue"})
-        if self.checkSoup(bluebean):
-            bluelink = bluebean.find("a")
+        
+        if len(self.validateSoup(bluebean)) > 0:
+            bluelink = self.validateSoup(bluebean.find("a"))[0]
             if len(bluelink.text) > 1:
                 self.bluePage = int(bluelink.attrs.get("href").strip('/'))
                 self.content += f"\nDivisionstaste blättert zu {bluelink.text} auf Seite {self.bluePage}"
@@ -96,8 +98,8 @@ class rbbText:
         if len(self.content) < 3:
             self.content += "Seite ist leer."
         self.content = self.content.replace('-\n', '')
-        
-    def extractAndPreparePage(self, page, sub=0):
+    
+    def extractAndPreparePage(self, page, sub=1):
         self.extractPage(page, sub)
         self.appendContent()
         self.extractJumpingPages()

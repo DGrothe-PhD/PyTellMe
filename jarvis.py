@@ -4,8 +4,9 @@ import pywhatkit
 import datetime
 import locale
 import wikipedia
-import pyjokes
-import traceback
+import re
+#import pyjokes
+#import traceback
 
 from videoText import rbbWeather
 from videoText import rbbText
@@ -30,6 +31,8 @@ def talk(text):
     engine.say(text)
     engine.runAndWait()
 
+def makeReadable(text):
+    return re.sub(r'^(\d+)\.(\d{2}\s)', r'\1,\2', text, flags=re.MULTILINE)
 
 def take_command():
     command = ""
@@ -82,12 +85,13 @@ def run_jarvis():
 
     elif 'mdax' in command:
         textMDAX = ardText(716)
-        print(textMDAX.content)
-        #talk(textMDAX.content)
-        return
-        textMDAX2 = textMDAX.extractAndPreparePage(716, 2)
-        print(textMDAX2.content)
-        #talk(textMDAX2.content)
+        textresult = makeReadable(textMDAX.content)
+        print(textresult)
+        talk(textresult)
+        textMDAX.extractAndPreparePage(716, 2)
+        textresult = makeReadable(textMDAX.content)
+        print(textresult)
+        talk(textresult)
     #elif 'was' in command:
     #    person = command.replace('was', '')
     #    utilities.search_wikipedia(person)
