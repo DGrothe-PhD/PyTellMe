@@ -2,53 +2,52 @@ import requests
 from videoText import rbbText, ardText, bayernText, ndrText, videoTextUtils
 # todo: from ... import applied speaker
 
-WELCOME = """Hallo, ich bin dein Videotext-Assistent.
-Eingabe Seitenzahl (dreistellig),
-Beenden durch die Eingabe 'stop'."""
-LIMITATION = "Bis jetzt kann ich nur eine Auswahl von Videotexten."
-
 class VTextStatus(videoTextUtils):
+    WELCOME = "Hallo, ich bin dein Videotext-Assistent." + \
+     "Eingabe Seitenzahl (dreistellig)," + \
+     "Beenden durch die Eingabe 'stop'."
+    LIMITATION = "Bis jetzt kann ich nur eine Auswahl von Videotexten."
     isRunning = True
     page = 100
     sub = 1
-    #
     textNews = rbbText(page)
+    stationlist_erste = {"1", "das erste", "ard"}
+    stationlist_ndr = {"nord", "ndr"}
+    stationlist_bayern = {"6", "bayern", "br"}
+    
+    stationlist_examples = { \
+     "Das Erste" : stationlist_erste,
+     #"NDR" : stationlist_ndr,
+     "BR" : stationlist_bayern
+    }
+    
+    @staticmethod
+    def start():
+        print(VTextStatus.WELCOME)
+        print(VTextStatus.LIMITATION)
+        examples = []
+        for station, aliases in VTextStatus.stationlist_examples.items():
+            examples.append(f"{station}:  {', '.join(aliases)}")
+        TELL_AVAILABLE_STATIONS = "\n".join(examples)
+        userWhichVideotext = "Welchen Sendetext möchten Sie aufrufen?\n[  Beispiele:  ]\n"
+        station = input(userWhichVideotext + TELL_AVAILABLE_STATIONS + "\n...:")
+        #
+        if station.lower() in VTextStatus.stationlist_erste:
+            VTextStatus.textNews = ardText(100)
+        elif station.lower() in VTextStatus.stationlist_ndr:
+            VTextStatus.textNews = ndrText(100)
+        elif station.lower() in VTextStatus.stationlist_bayern:
+            VTextStatus.textNews = bayernText(100)
+        else:
+            pass
 
-print(WELCOME)
-print(LIMITATION)
-
-stationlist_erste = {"1", "das erste", "ard"}
-stationlist_ndr = {"nord", "ndr"}
-stationlist_bayern = {"bayern", "br"}
-stationlist_examples = { \
- "Das Erste" : stationlist_erste,
- #"NDR" : stationlist_ndr,
- "BR" : stationlist_bayern
-}
-#
-examples = []
-for station, aliases in stationlist_examples.items():
-    examples.append(f"{station}:  {', '.join(aliases)}")
-
-TELL_AVAILABLE_STATIONS = "\n".join(examples)
-user_which_videotext = "Welchen Sendetext möchten Sie aufrufen?\n[  Beispiele:  ]\n"
-station = input(user_which_videotext + TELL_AVAILABLE_STATIONS + "\n...:")
-#
-#
-if station.lower() in stationlist_erste:
-    VTextStatus.textNews = ardText(100)
-elif station.lower() in stationlist_ndr:
-    VTextStatus.textNews = ndrText(100)
-elif station.lower() in stationlist_bayern:
-    VTextStatus.textNews = bayernText(100)
-else:
-    pass
+VTextStatus.start()
 
 while VTextStatus.isRunning:
     print("...")
     #
     try:
-        newpage = input("Welche Seite möchtest du lesen?")
+        newpage = input("Welche Seite lesen?")
         if newpage[0] == '>' or newpage == ' ':
             VTextStatus.sub += 1
             VTextStatus.textNews.extractAndPreparePage(\

@@ -10,6 +10,12 @@ class videoTextUtils:
     }
 
 class rbbText:
+    """Reads any rbbText page.
+
+    Properties:
+        content: the text of the videotext page.
+        api      web page address
+    """
     content = ""
     yellowPage = 100
     bluePage = 100
@@ -31,17 +37,31 @@ class rbbText:
         self.peas = None
         self.peas_style = None
     #
-    def checkSoup(self, contents):
-        return type(contents) == list and len(contents) > 0
-    #
     def validateSoup(self, contents):
-        if type(contents) == list and len(contents) > 0:
+        """Validate Soup() object. 
+
+        Args:
+            `contents` (Soup(), list of Soup(), NoneType): return object of Soup.find()
+
+        Returns:
+            list of Soup() objects or empty list.\n
+            If Soup has not found anything, an empty list is returned.\n
+            If Soup has found exactly one entry, a list with that entry.\n
+            If Soup has found multiple entries, return `contents`
+        """        
+        if isinstance(contents, list) and len(contents) > 0:
             return contents
-        if type(contents) == Soup:
+        if isinstance(contents, Soup):
             return [contents]
         return []
     #
-    def extractPage(self, page, sub=1):
+    def extractPage(self, page: int, sub=1):
+        """Requests content of videotext at page `page`, subpage `sub`/n
+
+        Args:
+            page (int): a value between 100 and 899
+            sub (int, optional): Number of subpage. Defaults to 1.
+        """
         try:
             self.clearValues()
             if page > 899 or page < 100:
@@ -65,7 +85,7 @@ class rbbText:
             #
                 for y in alist:
                     if len(y.html) > 1:
-                        linked_pages = re.findall("\d+", y.html)
+                        linked_pages = re.findall(r'\d+', y.html)
                         addline += " " + linked_pages[-1]
                 self.lines.append(addline)
         except requests.exceptions.HTTPError as http_err:
@@ -81,6 +101,7 @@ class rbbText:
             print(f"Fehlermeldung: {e}")
     #
     def extractJumpingPages(self):
+        "Extracts topic and page number to jump to with yellow and blue remote button"
         yellowbean = self.soup.find("span", {"class": "block_yellow"})
         if len(self.validateSoup(yellowbean)) > 0:
             yellowlink = self.validateSoup(yellowbean.find("a"))[0]
@@ -99,7 +120,7 @@ class rbbText:
                  f"auf Seite {self.bluePage}"
     #
     def appendContent(self):
-        # process and prettify text
+        "process and prettify extracted text lines and append these to content"
         for x in self.lines:
             if len(str(x)) > 1 :
                 self.content += '\n' + str(x)
@@ -107,7 +128,13 @@ class rbbText:
             self.content += "Seite ist leer."
         self.content = self.content.replace('-\n', '')
     #
-    def extractAndPreparePage(self, page, sub=1):
+    def extractAndPreparePage(self, page: int, sub=1):
+        """Extracts page content, formats everything and writes text into `content`.
+
+        Args:
+            page (int): a value between 100 and 899
+            sub (int, optional): Number of subpage. Defaults to 1.
+        """
         self.extractPage(page, sub)
         self.appendContent()
         self.extractJumpingPages()
@@ -143,6 +170,13 @@ class rbbWeather(rbbText):
     # '\xa0...' can read '&nbsp;&nbsp;&nbsp;&nbsp;'
     '''
     def extractTable(self, text, tabpattern='&nbsp;&nbsp;&nbsp;&nbsp;'):
+        """Preparation to speak a weather table in clear sentences.
+
+        Args:
+            text: text line (string)
+            tabpattern (str, optional): fill between videotext column cells. 
+            Defaults to '&nbsp;&nbsp;&nbsp;&nbsp;'.
+        """
         if "Sa" in text or "Mo" in text:
             self.weekdays = text.strip('\xa0').split(tabpattern)
         elif text.startswith("Max"):
