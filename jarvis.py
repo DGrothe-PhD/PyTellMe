@@ -1,11 +1,13 @@
+import datetime
+import locale
+import re
+
 import speech_recognition as sr
 import pyttsx3
 import pywhatkit
-import datetime
-import locale
+
 import wikipedia
-import re
-#import pyjokes
+
 #import traceback
 
 from videoText import rbbWeather
@@ -31,7 +33,7 @@ def talk(text):
     engine.say(text)
     engine.runAndWait()
 
-def makeReadable(text):
+def MakeReadable(text):
     return re.sub(r'^(\d+)\.(\d{2}\s)', r'\1,\2', text, flags=re.MULTILINE)
 
 def take_command():
@@ -52,7 +54,7 @@ def take_command():
 # Wikipedia
 class utilities:
     @staticmethod
-    def search_wikipedia(text, showAll = False):
+    def SearchWikipedia(text, showAll = False):
         status.engineUsed = "wikipedia"
         status.wikifound = wikipedia.search(text, results=3)
         if len(status.wikifound) > 1 and not showAll:
@@ -81,32 +83,32 @@ def run_jarvis():
 
     elif 'wikipedia' in command:
         person = command.replace('wikipedia', '')
-        utilities.search_wikipedia(person)
+        utilities.SearchWikipedia(person)
 
     elif 'mdax' in command:
-        textMDAX = ardText(716)
-        textresult = makeReadable(textMDAX.content)
-        print(textresult)
-        talk(textresult)
-        textMDAX.extractAndPreparePage(716, 2)
-        textresult = makeReadable(textMDAX.content)
-        print(textresult)
-        talk(textresult)
+        TextMdax = ardText(716)
+        TextResult = MakeReadable(TextMdax.content)
+        print(TextResult)
+        talk(TextResult)
+        TextMdax.extractAndPreparePage(716, 2)
+        TextResult = MakeReadable(TextMdax.content)
+        print(TextResult)
+        talk(TextResult)
     #elif 'was' in command:
     #    person = command.replace('was', '')
-    #    utilities.search_wikipedia(person)
+    #    utilities.SearchWikipedia(person)
     #
     #elif 'wann' in command:
     #    person = command.replace('wann', '')
-    #    utilities.search_wikipedia(person)
+    #    utilities.SearchWikipedia(person)
     #
     #elif 'wo' in command:
     #    person = command.replace('wo', '')
-    #    utilities.search_wikipedia(person)
+    #    utilities.SearchWikipedia(person)
     
     elif 'zeige alle' in command:
         for person in status.wikifound:
-            utilities.search_wikipedia(person, True)
+            utilities.SearchWikipedia(person, True)
             status.wikifound.clear()
         else:
             talk("Keine Einträge")
@@ -122,7 +124,7 @@ def run_jarvis():
         print(textHeute.content)
         talk(textHeute.content)
         talk("Weiter zu den Aussichten mit beliebiger Taste.")
-        q = input("Weiter zu den Aussichten mit beliebiger Taste: ")
+        input("Weiter zu den Aussichten mit beliebiger Taste: ")
         print("Aussichten: ")
         talk("Aussichten: ")
         textAussichten = rbbWeather(163, True)

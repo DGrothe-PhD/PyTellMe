@@ -3,6 +3,7 @@ import requests
 from gazpacho import Soup
 
 class videoTextUtils:
+    PAGE_NOT_ACCESSIBLE = "Diese Seite kann nicht angezeigt werden."
     wochentage = { \
      "Mo" : "Montag", "Di": "Dienstag", "Mi": "Mittwoch", \
      "Do":"Donnerstag", "Fr": "Freitag", "Sa": "Samstag", "So": "Sonntag" \
@@ -41,36 +42,43 @@ class rbbText:
         return []
     #
     def extractPage(self, page, sub=1):
-        self.clearValues()
-        if page > 899 or page < 100:
-            page = 100
-        if '#' in self.api:
-            res = requests.get(self.api.replace('#', str(page)))
-        else:
-            res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >1 else ""))
-        res.raise_for_status()
-        #gazpacho
-        self.soup = Soup(res.text)
-        
-        peas = self.soup.find("span", {"class": "fg"}, partial=True)
-        peas_style = self.soup.find("span", {"class" : "style"}, partial=True)
-        #
-        # the easiest way to get rid of TypeError for empty soup
         try:
+            self.clearValues()
+            if page > 899 or page < 100:
+                page = 100
+            if '#' in self.api:
+                res = requests.get(self.api.replace('#', str(page)))
+            else:
+                res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >1 else ""))
+            res.raise_for_status()
+            #gazpacho
+            self.soup = Soup(res.text)
+            peas = self.soup.find("span", {"class": "fg"}, partial=True)
+            peas_style = self.soup.find("span", {"class" : "style"}, partial=True)
+            #
             self.lines += [self.linefilter(x.text) for x in self.validateSoup(peas)]
             # gather info like 'Thema xyz on page 123'
             for x in self.validateSoup(peas_style):
                 addline = self.linefilter(x.text)
                 alist = x.find("a")
                 alist = self.validateSoup(alist)
-            
+            #
                 for y in alist:
                     if len(y.html) > 1:
                         linked_pages = re.findall("\d+", y.html)
                         addline += " " + linked_pages[-1]
                 self.lines.append(addline)
-        except:
+        except requests.exceptions.HTTPError as http_err:
+            print(f'HTTP Fehlermeldung: {http_err}')
+        except requests.exceptions.ConnectionError:
+            print(videoTextUtils.PAGE_NOT_ACCESSIBLE)
+        except requests.exceptions.Timeout:
+            print("Zeitüberschreitung")
+        except requests.exceptions.RequestException as e:
+            print(f"Konnte Seite {self.api}... nicht aufrufen. \nFehler: {e}")
+        except Exception as e:
             print("Something went wrong.")
+            print(f"Fehlermeldung: {e}")
     #
     def extractJumpingPages(self):
         yellowbean = self.soup.find("span", {"class": "block_yellow"})
