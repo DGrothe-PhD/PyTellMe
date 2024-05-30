@@ -1,4 +1,5 @@
-from videoText import rbbText, ardText, bayernText, ndrText
+import requests
+from videoText import rbbText, ardText, bayernText, ndrText, videoTextUtils
 # todo: from ... import applied speaker
 
 WELCOME = """Hallo, ich bin dein Videotext-Assistent.
@@ -6,12 +7,12 @@ Eingabe Seitenzahl (dreistellig),
 Beenden durch die Eingabe 'stop'."""
 LIMITATION = "Bis jetzt kann ich nur eine Auswahl von Videotexten."
 
-class VTextStatus:
+class VTextStatus(videoTextUtils):
     isRunning = True
     page = 100
     sub = 1
+    #
     textNews = rbbText(page)
-
 
 print(WELCOME)
 print(LIMITATION)
@@ -83,7 +84,6 @@ while VTextStatus.isRunning:
         VTextStatus.textNews.extractAndPreparePage(int(VTextStatus.page))
         print(f"Blättern zu Seite {VTextStatus.page}")
         print(VTextStatus.textNews.content)
-        #
     except Exception as e:
         # HTTP error or anything
         print(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}") 
