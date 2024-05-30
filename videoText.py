@@ -1,6 +1,5 @@
-import requests
 import re
-#, bs4
+import requests
 from gazpacho import Soup
 
 class videoTextUtils:
@@ -19,10 +18,10 @@ class rbbText:
     peas_style = None
     
     api = 'https://www.rbbtext.de/'
-    
+    #
     def linefilter(self, text):
         return text.rstrip(' \xa0')
-    
+    #
     def clearValues(self):
         self.content = ""
         self.yellowPage = 100
@@ -30,23 +29,22 @@ class rbbText:
         self.lines = []
         self.peas = None
         self.peas_style = None
-    
+    #
     def checkSoup(self, contents):
         return type(contents) == list and len(contents) > 0
-    
+    #
     def validateSoup(self, contents):
         if type(contents) == list and len(contents) > 0:
             return contents
-        elif type(contents) == Soup:
+        if type(contents) == Soup:
             return [contents]
-        else:
-            return []
-    
+        return []
+    #
     def extractPage(self, page, sub=1):
         self.clearValues()
         if page > 899 or page < 100:
             page = 100
-        if self.api.__contains__('#'):
+        if '#' in self.api:
             res = requests.get(self.api.replace('#', str(page)))
         else:
             res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >1 else ""))
@@ -73,14 +71,15 @@ class rbbText:
                 self.lines.append(addline)
         except:
             print("Something went wrong.")
-    
+    #
     def extractJumpingPages(self):
         yellowbean = self.soup.find("span", {"class": "block_yellow"})
         if len(self.validateSoup(yellowbean)) > 0:
             yellowlink = self.validateSoup(yellowbean.find("a"))[0]
             if len(yellowlink.text) > 1:
                 self.yellowPage = int(yellowlink.attrs.get("href").strip('/'))
-                self.content += f"\nSternchen blättert zu {yellowlink.text} auf Seite {self.yellowPage}"
+                self.content += f"\nSternchen blättert zu {yellowlink.text}" + \
+                 f" auf Seite {self.yellowPage}"
         #
         bluebean = self.soup.find("span", {"class": "block_blue"})
         
@@ -88,8 +87,9 @@ class rbbText:
             bluelink = self.validateSoup(bluebean.find("a"))[0]
             if len(bluelink.text) > 1:
                 self.bluePage = int(bluelink.attrs.get("href").strip('/'))
-                self.content += f"\nDivisionstaste blättert zu {bluelink.text} auf Seite {self.bluePage}"
-    
+                self.content += f"\nDivisions-Taste blättert zu {bluelink.text} " + \
+                 f"auf Seite {self.bluePage}"
+    #
     def appendContent(self):
         # process and prettify text
         for x in self.lines:
@@ -98,12 +98,12 @@ class rbbText:
         if len(self.content) < 3:
             self.content += "Seite ist leer."
         self.content = self.content.replace('-\n', '')
-    
+    #
     def extractAndPreparePage(self, page, sub=1):
         self.extractPage(page, sub)
         self.appendContent()
         self.extractJumpingPages()
-    
+    #
     def __init__(self, page):
         self.extractAndPreparePage(page)
 
@@ -120,15 +120,13 @@ class ndrText(rbbText):
 class bayernText(rbbText):
     api = 'https://www.br.de/fernsehen/brtext/brtext-100.html?vtxpage='
 
-
-
 class rbbWeather(rbbText):
     tablepattern = "\xa0\xa0\xa0\xa0"
     weekdays = []
     mintemps = []
     maxtemps = []
     rainexpect = []
-    kgN = False
+    isRainForecast = False
     
     
     # preparation talk a table in clear sentences.
@@ -137,20 +135,16 @@ class rbbWeather(rbbText):
     # '\xa0...' can read '&nbsp;&nbsp;&nbsp;&nbsp;'
     '''
     def extractTable(self, text, tabpattern='&nbsp;&nbsp;&nbsp;&nbsp;'):
-        if text.__contains__("Sa") or text.__contains__("Mo"):
+        if "Sa" in text or "Mo" in text:
             self.weekdays = text.strip('\xa0').split(tabpattern)
-        
         elif text.startswith("Max"):
             self.maxtemps = text.strip('\xa0').split(tabpattern)[1:]
-        
         elif text.startswith("Min"):
             self.mintemps = text.strip('\xa0').split(tabpattern)[1:]
-            self.kgN = True
-            # safety, percent mark is too insignificant, use once.
-        
-        elif text.__contains__('%') and self.kgN:
+            self.isRainForecast = True
+        elif self.isRainForecast:
             self.rainexpect = text.strip('\xa0').rstrip('%').split(tabpattern)
-            self.kgN = False
+            self.isRainForecast = False
     
     def __init__(self, page, expectTable=False):
         self.extractPage(page)
@@ -165,8 +159,9 @@ class rbbWeather(rbbText):
                 # by line: fluent text? append this line.
                 elif len(str(x)) > 1 :
                     self.content += '\n' + str(x)
-            for i in range(0, len(self.weekdays)):
-                self.content += f"\n{videoTextUtils.wochentage[self.weekdays[i]]} morgens {self.mintemps[i]}, "
+            #for i in range(0, len(self.weekdays)):
+            for i, w in enumerate(self.weekdays):
+                self.content += f"\n{videoTextUtils.wochentage[w]} morgens {self.mintemps[i]}, "
                 self.content += f"maximal {str(self.maxtemps[i])} Grad, Niederschlagswahrscheinlichkeit " + \
                  f"{self.rainexpect[i]} Prozent."
         else:

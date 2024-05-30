@@ -1,6 +1,4 @@
-import requests
-#, bs4
-from gazpacho import Soup
+#
 from videoText import rbbWeather
 
 # Tonight and tomorrow
