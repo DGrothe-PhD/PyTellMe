@@ -61,7 +61,9 @@ while VTextStatus.isRunning:
         if newpage == "stop":
             VTextStatus.isRunning = False
             continue
-        if newpage[0] == '/':
+        if newpage == ".":
+            print("Seite wird neu geladen")
+        elif newpage[0] == '/':
             VTextStatus.page = VTextStatus.textNews.bluePage
         elif newpage[0] == '*':
             VTextStatus.page = VTextStatus.textNews.yellowPage
