@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from videoText import rbbText, ardText, bayernText, ndrText, videoTextUtils
+from videoText import rbbText, ARDText, bayernText, ndrText, videoTextUtils
 # todo: from ... import applied speaker
 
 
@@ -39,7 +39,7 @@ class VTextStatus(videoTextUtils):
         station = input(userWhichVideotext + TELL_AVAILABLE_STATIONS + "\n...:")
         #
         if station.lower() in VTextStatus.stationlist_erste:
-            VTextStatus.textNews = ardText(100)
+            VTextStatus.textNews = ARDText(100)
         elif station.lower() in VTextStatus.stationlist_ndr:
             VTextStatus.textNews = ndrText(100)
         elif station.lower() in VTextStatus.stationlist_bayern:

@@ -12,7 +12,7 @@ import wikipedia
 
 from videoText import rbbWeather
 from videoText import rbbText
-from videoText import ardText
+from videoText import ARDText
 
 ## We'll set German wikipedia as default.
 wikipedia.set_lang("de")
@@ -86,7 +86,7 @@ def run_jarvis():
         utilities.SearchWikipedia(person)
 
     elif 'mdax' in command:
-        TextMdax = ardText(716)
+        TextMdax = ARDText(716)
         TextResult = MakeReadable(TextMdax.content)
         print(TextResult)
         talk(TextResult)

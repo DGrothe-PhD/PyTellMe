@@ -27,9 +27,11 @@ class rbbText:
     api = 'https://www.rbbtext.de/'
     #
     def linefilter(self, text):
+        """remove symbols"""
         return text.rstrip(' \xa0')
     #
     def clearValues(self):
+        """reset to default values"""
         self.content = ""
         self.yellowPage = 100
         self.bluePage = 100
@@ -144,7 +146,7 @@ class rbbText:
 
 
 
-class ardText(rbbText):
+class ARDText(rbbText):
     api = 'https://www.ard-text.de/index.php?page='
 
 class ndrText(rbbText):
