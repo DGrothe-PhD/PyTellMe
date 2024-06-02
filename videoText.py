@@ -3,6 +3,7 @@ import requests
 from gazpacho import Soup
 
 class videoTextUtils:
+    """general settings for videotext"""
     PAGE_NOT_ACCESSIBLE = "Diese Seite kann nicht angezeigt werden."
     wochentage = { \
      "Mo" : "Montag", "Di": "Dienstag", "Mi": "Mittwoch", \
@@ -103,7 +104,7 @@ class rbbText:
             print(f"Fehlermeldung: {e}")
     #
     def extractJumpingPages(self):
-        "Extracts topic and page number to jump to with yellow and blue remote button"
+        """Extracts topic and page number to jump to with yellow and blue remote button"""
         yellowbean = self.soup.find("span", {"class": "block_yellow"})
         if len(self.validateSoup(yellowbean)) > 0:
             yellowlink = self.validateSoup(yellowbean.find("a"))[0]
@@ -122,7 +123,7 @@ class rbbText:
                  f"auf Seite {self.bluePage}"
     #
     def appendContent(self):
-        "process and prettify extracted text lines and append these to content"
+        """process and prettify extracted text lines and append these to content"""
         for x in self.lines:
             if len(str(x)) > 1 :
                 self.content += '\n' + str(x)
@@ -147,17 +148,21 @@ class rbbText:
 
 
 class ARDText(rbbText):
+    """gets videotext from DasErste.de (ARD-Text)"""
     api = 'https://www.ard-text.de/index.php?page='
 
-class ndrText(rbbText):
+class NDRText(rbbText):
+    """gets videotext from NDR Norddeutscher Rundfunk"""
     #api = https://www.ndr.de/public/teletext/521_01.htm
     #api = 'https://www.ndr.de/fernsehen/videotext/index.html'
     api = 'https://www.ndr.de/fernsehen/videotext/ndr5478.html?seite='
 
-class bayernText(rbbText):
+class BayernText(rbbText):
+    """gets videotext from BR (Bayerischer Rundfunk)"""
     api = 'https://www.br.de/fernsehen/brtext/brtext-100.html?vtxpage='
 
 class rbbWeather(rbbText):
+    """gets and formats weather forecast from rbbText"""
     tablepattern = "\xa0\xa0\xa0\xa0"
     weekdays = []
     mintemps = []
