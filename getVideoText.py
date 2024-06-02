@@ -1,6 +1,10 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import requests
 from videoText import rbbText, ardText, bayernText, ndrText, videoTextUtils
 # todo: from ... import applied speaker
+
 
 class VTextStatus(videoTextUtils):
     WELCOME = "Hallo, ich bin dein Videotext-Assistent." + \
@@ -14,11 +18,13 @@ class VTextStatus(videoTextUtils):
     stationlist_erste = {"1", "das erste", "ard"}
     stationlist_ndr = {"nord", "ndr"}
     stationlist_bayern = {"6", "bayern", "br"}
+    stationlist_rbb = {"3", "rbb", "berlin"}
     
     stationlist_examples = { \
      "Das Erste" : stationlist_erste,
      #"NDR" : stationlist_ndr,
-     "BR" : stationlist_bayern
+     "BR" : stationlist_bayern,
+     "rbb" : stationlist_rbb
     }
     
     @staticmethod
@@ -40,6 +46,17 @@ class VTextStatus(videoTextUtils):
             VTextStatus.textNews = bayernText(100)
         else:
             pass
+    
+    mapping = [ ('Ã¼', 'ü'), ('Ã¤', 'ä'), ('Ã¶', 'ö'), \
+     ( 'Ã„', 'Ä'), ('Ã–', 'Ö'), ('Ãœ', 'Ü'), ('ÃŸ', 'ß'), ('Ã', 'ß') 
+    ]
+    
+    @staticmethod
+    def output(Text):
+        txConv = Text
+        for k, v in VTextStatus.mapping:
+            txConv = txConv.replace(k,v)
+        print(txConv)
 
 VTextStatus.start()
 
@@ -83,8 +100,8 @@ while VTextStatus.isRunning:
         
         # browse page
         VTextStatus.textNews.extractAndPreparePage(int(VTextStatus.page))
-        print(f"Blättern zu Seite {VTextStatus.page}")
-        print(VTextStatus.textNews.content)
+        VTextStatus.output(f"Blättern zu Seite {VTextStatus.page}")
+        VTextStatus.output(VTextStatus.textNews.content)
     except Exception as e:
         # HTTP error or anything
         print(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}") 
