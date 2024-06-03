@@ -3,7 +3,7 @@ Ziel dieses kleinen Projekts ist eine
 Verbesserung der Nutzbarkeit alltäglicher Infoquellen wie Videotext für Sehbehinderte.
 
 Bisher ist der Videotext am TV-Gerät nur für Lesende oder unter Zuhilfenahme elektronischer Sehhilfen zu nutzen. 
-Das ist sehr umständlich. Ebenso wie der (häufig anfangs ungewohnte) Ungang mit alles umfassenden Sprachassistenzprogrammen wie NVDA.
+Das ist sehr umständlich. Ebenso wie der (häufig anfangs ungewohnte) Umgang mit alles umfassenden Sprachassistenzprogrammen wie NVDA.
  
 Da Videotext häufig auch online abrufbar ist, braucht man nur einen PC mit Python und dieses Projekt.
 
