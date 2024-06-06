@@ -9,6 +9,18 @@ class videoTextUtils:
      "Mo" : "Montag", "Di": "Dienstag", "Mi": "Mittwoch", \
      "Do":"Donnerstag", "Fr": "Freitag", "Sa": "Samstag", "So": "Sonntag" \
     }
+    #
+    topicKeys = { \
+     "a" : "Abendprogramm", "d" : "DAX", "e" : "Wirtschaft", \
+     "g" : "Gemischtes", \
+     "b" : "Börse", "i" : "Indizes", "m" : "MDAX", \
+     "p" : "Politik", \
+     "s" : "Sport", \
+     "t" : "TV-Programm", \
+     "u" : "Unwetterwarnungen", "v" : "Verbrauchertipps", \
+     "x" : "Extra", \
+     "w" : "Wetter", \
+    }
 
 class rbbText:
     """Reads any rbbText page.
@@ -148,7 +160,21 @@ class rbbText:
 
 
 class ARDText(rbbText):
-    """gets videotext from DasErste.de (ARD-Text)"""
+    """gets videotext from DasErste.de (ARD-Text)
+    
+    Attributes: 
+        topicPages:   quick access topic text numbers
+    """
+    topicPages = { \
+     "a" : 303, "d" : 715, "e" : 155, "g" : 135, \
+     "b" : 700, "i" : 711, "m" : 716, "p" : 130, \
+     "s" : 200, \
+     "t" : 300, \
+     "u" : 178, "v" : 165, \
+     "x" : 600, \
+     "w" : 171, \
+    }
+    
     api = 'https://www.ard-text.de/index.php?page='
 
 class NDRText(rbbText):
