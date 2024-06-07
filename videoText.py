@@ -36,7 +36,17 @@ class rbbText:
     lines = []
     peas = None
     peas_style = None
-    
+    #
+    topicPages = { \
+     "a" : 303, "d" : 100, "e" : 125, "g" : 105, \
+     "b" : 100, "i" : 100, "m" : 100, "p" : 100, \
+     "s" : 200, \
+     "t" : 300, \
+     "u" : 190, "v" : 100, \
+     "x" : 600, \
+     "w" : 160, \
+    }
+    #
     api = 'https://www.rbbtext.de/'
     #
     def linefilter(self, text):
