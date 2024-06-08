@@ -232,6 +232,7 @@ class rbbWeather(rbbText):
             self.isRainForecast = False
     
     def __init__(self, page, expectTable=False):
+        """initialize rbbText on page `page` """
         self.extractPage(page)
         # process and prettify text
         # make sentences from table
