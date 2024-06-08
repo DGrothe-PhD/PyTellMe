@@ -4,6 +4,3 @@ attr-naming-style=camelCase
 function-naming-style=camelCase
 method-naming-style=camelCase
 variable-naming-style=camelCase
-
-[MESSAGES CONTROL]
-disable=import-error

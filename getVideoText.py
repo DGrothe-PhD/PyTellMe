@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import requests
+import requests#necessary?
 from videoText import rbbText, ARDText, BayernText, NDRText, videoTextUtils
-# todo: from ... import applied speaker
 
 
 class VTextStatus(videoTextUtils):
