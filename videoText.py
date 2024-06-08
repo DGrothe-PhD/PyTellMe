@@ -98,7 +98,7 @@ class rbbText:
             res.raise_for_status()
             #gazpacho
             self.soup = Soup(res.text)
-            peas = self.soup.find("span", {"class": "fg"}, partial=True)
+            peas = self.soup.absichtlichtestfuzzifind("span", {"class": "fg"}, partial=True)
             peas_style = self.soup.find("span", {"class" : "style"}, partial=True)
             #
             self.lines += [self.linefilter(x.text) for x in self.validateSoup(peas)]
@@ -113,7 +113,7 @@ class rbbText:
                         linked_pages = re.findall(r'\d+', y.html)
                         addline += " " + linked_pages[-1]
                 self.lines.append(addline)
-        except requests.absichtlichtestendexceptions.HTTPError as http_err:
+        except requests.exceptions.HTTPError as http_err:
             print(f'HTTP Fehlermeldung: {http_err}')
         except requests.exceptions.ConnectionError:
             print(videoTextUtils.PAGE_NOT_ACCESSIBLE)
