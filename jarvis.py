@@ -33,7 +33,7 @@ def talk(text):
     engine.say(text)
     engine.runAndWait()
 
-def MakeReadable(text):
+def makeReadable(text):
     return re.sub(r'^(\d+)\.(\d{2}\s)', r'\1,\2', text, flags=re.MULTILINE)
 
 def take_command():
@@ -54,7 +54,7 @@ def take_command():
 # Wikipedia
 class utilities:
     @staticmethod
-    def SearchWikipedia(text, showAll = False):
+    def searchWikipedia(text, showAll = False):
         status.engineUsed = "wikipedia"
         status.wikifound = wikipedia.search(text, results=3)
         if len(status.wikifound) > 1 and not showAll:
@@ -83,32 +83,32 @@ def run_jarvis():
 
     elif 'wikipedia' in command:
         person = command.replace('wikipedia', '')
-        utilities.SearchWikipedia(person)
+        utilities.searchWikipedia(person)
 
     elif 'mdax' in command:
-        TextMdax = ARDText(716)
-        TextResult = MakeReadable(TextMdax.content)
-        print(TextResult)
-        talk(TextResult)
-        TextMdax.extractAndPreparePage(716, 2)
-        TextResult = MakeReadable(TextMdax.content)
-        print(TextResult)
-        talk(TextResult)
+        textMdax = ARDText(716)
+        textResult = makeReadable(textMdax.content)
+        print(textResult)
+        talk(textResult)
+        textMdax.extractAndPreparePage(716, 2)
+        textResult = makeReadable(textMdax.content)
+        print(textResult)
+        talk(textResult)
     #elif 'was' in command:
     #    person = command.replace('was', '')
-    #    utilities.SearchWikipedia(person)
+    #    utilities.searchWikipedia(person)
     #
     #elif 'wann' in command:
     #    person = command.replace('wann', '')
-    #    utilities.SearchWikipedia(person)
+    #    utilities.searchWikipedia(person)
     #
     #elif 'wo' in command:
     #    person = command.replace('wo', '')
-    #    utilities.SearchWikipedia(person)
+    #    utilities.searchWikipedia(person)
     
     elif 'zeige alle' in command:
         for person in status.wikifound:
-            utilities.SearchWikipedia(person, True)
+            utilities.searchWikipedia(person, True)
             status.wikifound.clear()
         else:
             talk("Keine Einträge")
