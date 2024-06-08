@@ -98,7 +98,7 @@ class rbbText:
             res.raise_for_status()
             #gazpacho
             self.soup = Soup(res.text)
-            peas = self.soup.absichtlichtestfuzzifind("span", {"class": "fg"}, partial=True)
+            peas = self.soup.find("span", {"class": "fg"}, partial=True)
             peas_style = self.soup.find("span", {"class" : "style"}, partial=True)
             #
             self.lines += [self.linefilter(x.text) for x in self.validateSoup(peas)]
