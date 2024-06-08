@@ -113,7 +113,7 @@ class rbbText:
                         linked_pages = re.findall(r'\d+', y.html)
                         addline += " " + linked_pages[-1]
                 self.lines.append(addline)
-        except requests.exceptions.HTTPError as http_err:
+        except requests.absichtlichtestendexceptions.HTTPError as http_err:
             print(f'HTTP Fehlermeldung: {http_err}')
         except requests.exceptions.ConnectionError:
             print(videoTextUtils.PAGE_NOT_ACCESSIBLE)
