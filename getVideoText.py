@@ -21,14 +21,14 @@ class VTextStatus(videoTextUtils):
     aliasesNdr = {"nord", "ndr"}
     aliasesBayern = {"6", "bayern", "br"}
     aliasesRbb = {"3", "rbb", "berlin"}
-    
+    #
     stationlist = { \
      "Das Erste" : aliasesErste,
      #"NDR" : aliasesNdr,
      "BR" : aliasesBayern,
      "rbb" : aliasesRbb
     }
-    
+    #
     @staticmethod
     def start():
         """let user choose TV station for teletext """
@@ -49,12 +49,12 @@ class VTextStatus(videoTextUtils):
             VTextStatus.textNews = BayernText(100)
         else:
             pass
-    
+    #
     mapping = [ ('Ã¼', 'ü'), ('Ã¤', 'ä'), ('Ã¶', 'ö'), \
      ( 'Ã„', 'Ä'), ('Ã–', 'Ö'), ('Ãœ', 'Ü'), ('ÃŸ', 'ß') \
     ]
     aftermapping = [ ('Ã', 'ß') ]#testing if necessary
-    
+    #
     @staticmethod
     def output(Text):
         """Replace utf-8 double-byte (or, in fact, four-byte) umlauts right ones"""
@@ -64,7 +64,7 @@ class VTextStatus(videoTextUtils):
         #for k, v in VTextStatus.aftermapping:
         #    txConv = txConv.replace(k,v)
         print(txConv)
-    
+    #
     @staticmethod
     def browsePage():
         VTextStatus.textNews.extractAndPreparePage(int(VTextStatus.page))
@@ -117,7 +117,7 @@ while VTextStatus.isRunning:
             #arriving here, newpage is a number
             VTextStatus.hasrun = True
             VTextStatus.page = int(newpage)
-        
+        #
         VTextStatus.browsePage()
     except Exception as e:
         # HTTP error or anything

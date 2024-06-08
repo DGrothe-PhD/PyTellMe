@@ -36,7 +36,7 @@ def talk(text):
 def makeReadable(text):
     return re.sub(r'^(\d+)\.(\d{2}\s)', r'\1,\2', text, flags=re.MULTILINE)
 
-def take_command():
+def takeCommand():
     command = ""
     try:
         with sr.Microphone() as source:
@@ -58,33 +58,33 @@ class utilities:
         status.engineUsed = "wikipedia"
         status.wikifound = wikipedia.search(text, results=3)
         if len(status.wikifound) > 1 and not showAll:
-            answers_found = " oder ".join(status.wikifound)
-            print(answers_found)
-            talk(answers_found)
+            answersFound = " oder ".join(status.wikifound)
+            print(answersFound)
+            talk(answersFound)
         else:
             info = wikipedia.summary(text, sentences = 2)
             print(info)
             talk(info)
 
-def run_jarvis():
-    command = take_command()
+def runJarvis():
+    command = takeCommand()
     print(command)
-
+    #
     if 'spiel' in command:
         song = command.replace('spiel', '')
         status.engineUsed = "YouTube"
         talk('Es läuft ' + song)
         pywhatkit.playonyt(song)
-
+    #
     elif 'zeit' in command:
         time = datetime.datetime.now().strftime('%H:%M')
         print(time)
         talk(f"Es ist jetzt {time} Uhr.")
-
+    #
     elif 'wikipedia' in command:
         person = command.replace('wikipedia', '')
         utilities.searchWikipedia(person)
-
+    #
     elif 'mdax' in command:
         textMdax = ARDText(716)
         textResult = makeReadable(textMdax.content)
@@ -105,19 +105,19 @@ def run_jarvis():
     #elif 'wo' in command:
     #    person = command.replace('wo', '')
     #    utilities.searchWikipedia(person)
-    
+    #
     elif 'zeige alle' in command:
         for person in status.wikifound:
             utilities.searchWikipedia(person, True)
             status.wikifound.clear()
         else:
             talk("Keine Einträge")
-    
+    #
     elif 'datum' in command:
         date = datetime.datetime.now().strftime('%W. KW, %A den %d. %B %Y')
         print(date)
         talk(date)
-    
+    #
     elif 'wetter' in command:
         print("Wetter: ")
         textHeute = rbbWeather(162, False)
@@ -130,8 +130,8 @@ def run_jarvis():
         textAussichten = rbbWeather(163, True)
         print(textAussichten.content)
         talk(textAussichten.content)
-
-    elif 'stop listening'.__eq__(command):
+    #
+    elif 'stop listening' in command:
         talk('Bye, until next time.')
         status.isRunning = False
     else:
@@ -140,7 +140,7 @@ def run_jarvis():
 while status.isRunning:
     print("...")# without it, it didn't stop listening
     try:
-        run_jarvis()
+        runJarvis()
     except Exception as e:
         talk(f"Entschuldigung, {status.engineUsed} konnte es nicht finden.") 
         print(e)
