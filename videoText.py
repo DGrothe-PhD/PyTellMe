@@ -4,7 +4,7 @@ from gazpacho import Soup
 
 class VideoTextUtils:
     """general settings for videotext"""
-    PAGE_NOT_ACCESSIBLE = "Diese Seite kann nicht angezeigt werden."
+    pageNotAccessible = "Diese Seite kann nicht angezeigt werden."
     wochentage = { \
      "Mo" : "Montag", "Di": "Dienstag", "Mi": "Mittwoch", \
      "Do":"Donnerstag", "Fr": "Freitag", "Sa": "Samstag", "So": "Sonntag" \
@@ -116,7 +116,7 @@ class RbbText:
         except requests.exceptions.HTTPError as http_err:
             print(f'HTTP Fehlermeldung: {http_err}')
         except requests.exceptions.ConnectionError:
-            print(VideoTextUtils.PAGE_NOT_ACCESSIBLE)
+            print(VideoTextUtils.pageNotAccessible)
         except requests.exceptions.Timeout:
             print("Zeitüberschreitung")
         except requests.exceptions.RequestException as e:

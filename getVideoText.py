@@ -6,10 +6,10 @@ from videoText import RbbText, ARDText, BayernText, NDRText, VideoTextUtils
 
 class VTextStatus(VideoTextUtils):
     """settings and start"""
-    WELCOME = "Hallo, ich bin dein Videotext-Assistent." + \
+    welcome = "Hallo, ich bin dein Videotext-Assistent." + \
      "Eingabe Seitenzahl (dreistellig)," + \
      "Beenden durch die Eingabe 'stop'."
-    LIMITATION = "Bis jetzt kann ich nur eine Auswahl von Videotexten."
+    limitationNotice = "Bis jetzt kann ich nur eine Auswahl von Videotexten."
     isRunning = True
     hasrun = False
     page = 100
@@ -30,8 +30,8 @@ class VTextStatus(VideoTextUtils):
     @staticmethod
     def start():
         """let user choose TV station for teletext """
-        print(VTextStatus.WELCOME)
-        print(VTextStatus.LIMITATION)
+        print(VTextStatus.welcome)
+        print(VTextStatus.limitationNotice)
         examples = []
         for station, aliases in VTextStatus.stationlist.items():
             examples.append(f"{station}:  {', '.join(aliases)}")
