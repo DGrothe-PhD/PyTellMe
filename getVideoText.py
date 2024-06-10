@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import requests#necessary?
-from videoText import rbbText, ARDText, BayernText, NDRText, videoTextUtils
+from videoText import RbbText, ARDText, BayernText, NDRText, VideoTextUtils
 
 
-class VTextStatus(videoTextUtils):
+class VTextStatus(VideoTextUtils):
     """settings and start"""
     WELCOME = "Hallo, ich bin dein Videotext-Assistent." + \
      "Eingabe Seitenzahl (dreistellig)," + \
@@ -15,7 +14,7 @@ class VTextStatus(videoTextUtils):
     hasrun = False
     page = 100
     sub = 1
-    textNews = rbbText(page)
+    textNews = RbbText(page)
     aliasesErste = {"1", "das erste", "ard"}
     aliasesNdr = {"nord", "ndr"}
     aliasesBayern = {"6", "bayern", "br"}
@@ -52,20 +51,24 @@ class VTextStatus(videoTextUtils):
     mapping = [ ('Ã¼', 'ü'), ('Ã¤', 'ä'), ('Ã¶', 'ö'), \
      ( 'Ã„', 'Ä'), ('Ã–', 'Ö'), ('Ãœ', 'Ü'), ('ÃŸ', 'ß') \
     ]
-    aftermapping = [ ('Ã', 'ß') ]#testing if necessary
+    aftermapping = [ ('Ã', 'ß') ]
     #
     @staticmethod
-    def output(Text):
-        """Replace utf-8 double-byte (or, in fact, four-byte) umlauts right ones"""
-        txConv = Text
+    def output(text : str):
+        """Prepare and output the text.
+        Output: write in console, speak.
+        Replace utf-8 double-byte (or, in fact, four-byte) umlauts right ones
+        """
+        txConv = text
         for k, v in VTextStatus.mapping:
             txConv = txConv.replace(k,v)
-        #for k, v in VTextStatus.aftermapping:
-        #    txConv = txConv.replace(k,v)
+        for k, v in VTextStatus.aftermapping:
+            txConv = txConv.replace(k,v)
         print(txConv)
     #
     @staticmethod
     def browsePage():
+        """get content of videotext page at current page number"""
         VTextStatus.textNews.extractAndPreparePage(int(VTextStatus.page))
         VTextStatus.output(f"Blättern zu Seite {VTextStatus.page}")
         VTextStatus.output(VTextStatus.textNews.content)
@@ -120,4 +123,4 @@ while VTextStatus.isRunning:
         VTextStatus.browsePage()
     except Exception as e:
         # HTTP error or anything
-        print(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}") 
+        print(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}")

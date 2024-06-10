@@ -10,8 +10,8 @@ import wikipedia
 
 #import traceback
 
-from videoText import rbbWeather
-from videoText import rbbText
+from videoText import RbbWeather
+#from videoText import RbbText
 from videoText import ARDText
 
 ## We'll set German wikipedia as default.
@@ -107,11 +107,12 @@ def runJarvis():
     #    utilities.searchWikipedia(person)
     #
     elif 'zeige alle' in command:
+        if len(status.wikifound) < 1:
+            talk("Keine Einträge")
+            continue
         for person in status.wikifound:
             utilities.searchWikipedia(person, True)
-            status.wikifound.clear()
-        else:
-            talk("Keine Einträge")
+        status.wikifound.clear()
     #
     elif 'datum' in command:
         date = datetime.datetime.now().strftime('%W. KW, %A den %d. %B %Y')
@@ -120,14 +121,14 @@ def runJarvis():
     #
     elif 'wetter' in command:
         print("Wetter: ")
-        textHeute = rbbWeather(162, False)
+        textHeute = RbbWeather(162, False)
         print(textHeute.content)
         talk(textHeute.content)
         talk("Weiter zu den Aussichten mit beliebiger Taste.")
         input("Weiter zu den Aussichten mit beliebiger Taste: ")
         print("Aussichten: ")
         talk("Aussichten: ")
-        textAussichten = rbbWeather(163, True)
+        textAussichten = RbbWeather(163, True)
         print(textAussichten.content)
         talk(textAussichten.content)
     #

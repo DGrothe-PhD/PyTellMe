@@ -2,7 +2,7 @@ import re
 import requests
 from gazpacho import Soup
 
-class videoTextUtils:
+class VideoTextUtils:
     """general settings for videotext"""
     PAGE_NOT_ACCESSIBLE = "Diese Seite kann nicht angezeigt werden."
     wochentage = { \
@@ -22,8 +22,8 @@ class videoTextUtils:
      "w" : "Wetter", \
     }
 
-class rbbText:
-    """Reads any rbbText page.
+class RbbText:
+    """Reads any RbbText page.
 
     Properties:
         content: the text of the videotext page.
@@ -49,7 +49,7 @@ class rbbText:
     #
     api = 'https://www.rbbtext.de/'
     #
-    def linefilter(self, text):
+    def linefilter(self, text : str):
         """remove symbols"""
         return text.rstrip(' \xa0')
     #
@@ -73,7 +73,7 @@ class rbbText:
             If Soup has not found anything, an empty list is returned.\n
             If Soup has found exactly one entry, a list with that entry.\n
             If Soup has found multiple entries, return `contents`
-        """        
+        """
         if isinstance(contents, list) and len(contents) > 0:
             return contents
         if isinstance(contents, Soup):
@@ -116,7 +116,7 @@ class rbbText:
         except requests.exceptions.HTTPError as http_err:
             print(f'HTTP Fehlermeldung: {http_err}')
         except requests.exceptions.ConnectionError:
-            print(videoTextUtils.PAGE_NOT_ACCESSIBLE)
+            print(VideoTextUtils.PAGE_NOT_ACCESSIBLE)
         except requests.exceptions.Timeout:
             print("Zeitüberschreitung")
         except requests.exceptions.RequestException as e:
@@ -136,7 +136,7 @@ class rbbText:
                  f" auf Seite {self.yellowPage}"
         #
         bluebean = self.soup.find("span", {"class": "block_blue"})
-        
+        #
         if len(self.validateSoup(bluebean)) > 0:
             bluelink = self.validateSoup(bluebean.find("a"))[0]
             if len(bluelink.text) > 1:
@@ -164,12 +164,12 @@ class rbbText:
         self.appendContent()
         self.extractJumpingPages()
     #
-    def __init__(self, page):
+    def __init__(self, page : int):
         self.extractAndPreparePage(page)
 
 
 
-class ARDText(rbbText):
+class ARDText(RbbText):
     """gets videotext from DasErste.de (ARD-Text)
     
     Attributes: 
@@ -184,35 +184,34 @@ class ARDText(rbbText):
      "x" : 600, \
      "w" : 171, \
     }
-    
+    #
     api = 'https://www.ard-text.de/index.php?page='
 
-class NDRText(rbbText):
+class NDRText(RbbText):
     """gets videotext from NDR Norddeutscher Rundfunk"""
     #api = https://www.ndr.de/public/teletext/521_01.htm
     #api = 'https://www.ndr.de/fernsehen/videotext/index.html'
     api = 'https://www.ndr.de/fernsehen/videotext/ndr5478.html?seite='
 
-class BayernText(rbbText):
+class BayernText(RbbText):
     """gets videotext from BR (Bayerischer Rundfunk)"""
     api = 'https://www.br.de/fernsehen/brtext/brtext-100.html?vtxpage='
 
-class rbbWeather(rbbText):
-    """gets and formats weather forecast from rbbText"""
+class RbbWeather(RbbText):
+    """gets and formats weather forecast from RbbText"""
     tablepattern = "\xa0\xa0\xa0\xa0"
     weekdays = []
     mintemps = []
     maxtemps = []
     rainexpect = []
     isRainForecast = False
-    
-    
+    #
     # preparation talk a table in clear sentences.
     '''
     # just in case (bs4 style-dependent)
     # '\xa0...' can read '&nbsp;&nbsp;&nbsp;&nbsp;'
     '''
-    def extractTable(self, text, tabpattern='&nbsp;&nbsp;&nbsp;&nbsp;'):
+    def extractTable(self, text : str, tabpattern='&nbsp;&nbsp;&nbsp;&nbsp;'):
         """Preparation to speak a weather table in clear sentences.
 
         Args:
@@ -230,9 +229,9 @@ class rbbWeather(rbbText):
         elif self.isRainForecast:
             self.rainexpect = text.strip('\xa0').rstrip('%').split(tabpattern)
             self.isRainForecast = False
-    
-    def __init__(self, page, expectTable=False):
-        """initialize rbbText on page `page` """
+    #
+    def __init__(self, page : int, expectTable=False):
+        """initialize RbbText on page `page` """
         self.extractPage(page)
         # process and prettify text
         # make sentences from table
@@ -247,9 +246,9 @@ class rbbWeather(rbbText):
                     self.content += '\n' + str(x)
             #for i in range(0, len(self.weekdays)):
             for i, w in enumerate(self.weekdays):
-                self.content += f"\n{videoTextUtils.wochentage[w]} morgens {self.mintemps[i]}, "
-                self.content += f"maximal {str(self.maxtemps[i])} Grad, Niederschlagswahrscheinlichkeit " + \
-                 f"{self.rainexpect[i]} Prozent."
+                self.content += f"\n{VideoTextUtils.wochentage[w]} morgens {self.mintemps[i]}, "
+                self.content += f"maximal {str(self.maxtemps[i])} Grad," + \
+                 f" Niederschlagswahrscheinlichkeit {self.rainexpect[i]} Prozent."
         else:
             self.appendContent()
         self.content = self.content.replace('-\n', '')
