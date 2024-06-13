@@ -19,17 +19,27 @@ wikipedia.set_lang("de")
 locale.setlocale(locale.LC_TIME, "de_DE")
 
 listener = sr.Recognizer()
-engine = pyttsx3.init()
-voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[0].id)
+debugSwitchOffSpeaker = False
 
-class status:
+try:
+    engine = pyttsx3.init()
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[0].id)
+except Exception as e:
+    print("Sorry, pyttsx3 is not working.")
+    print(e)
+    debugSwitchOffSpeaker = True
+
+class JarvisStatus:
     isRunning = True
     engineUsed = ""
     wikifound = []
 
 
 def talk(text):
+    if debugSwitchOffSpeaker:
+        return
+    """lets system's voice speak the text"""
     engine.say(text)
     engine.runAndWait()
 
@@ -53,12 +63,13 @@ def takeCommand():
 
 # Wikipedia
 class utilities:
+    """basic functionality """
     @staticmethod
     def searchWikipedia(text, showAll = False):
-        status.engineUsed = "wikipedia"
-        status.wikifound = wikipedia.search(text, results=3)
-        if len(status.wikifound) > 1 and not showAll:
-            answersFound = " oder ".join(status.wikifound)
+        JarvisStatus.engineUsed = "wikipedia"
+        JarvisStatus.wikifound = wikipedia.search(text, results=3)
+        if len(JarvisStatus.wikifound) > 1 and not showAll:
+            answersFound = " oder ".join(JarvisStatus.wikifound)
             print(answersFound)
             talk(answersFound)
         else:
@@ -72,7 +83,7 @@ def runJarvis():
     #
     if 'spiel' in command:
         song = command.replace('spiel', '')
-        status.engineUsed = "YouTube"
+        JarvisStatus.engineUsed = "YouTube"
         talk('Es läuft ' + song)
         pywhatkit.playonyt(song)
     #
@@ -107,12 +118,12 @@ def runJarvis():
     #    utilities.searchWikipedia(person)
     #
     elif 'zeige alle' in command:
-        if len(status.wikifound) < 1:
+        if len(JarvisStatus.wikifound) < 1:
             talk("Keine Einträge")
-            continue
-        for person in status.wikifound:
+            return
+        for person in JarvisStatus.wikifound:
             utilities.searchWikipedia(person, True)
-        status.wikifound.clear()
+        JarvisStatus.wikifound.clear()
     #
     elif 'datum' in command:
         date = datetime.datetime.now().strftime('%W. KW, %A den %d. %B %Y')
@@ -120,28 +131,20 @@ def runJarvis():
         talk(date)
     #
     elif 'wetter' in command:
-        print("Wetter: ")
-        textHeute = RbbWeather(162, False)
+        textHeute = RbbWeather()
         print(textHeute.content)
         talk(textHeute.content)
-        talk("Weiter zu den Aussichten mit beliebiger Taste.")
-        input("Weiter zu den Aussichten mit beliebiger Taste: ")
-        print("Aussichten: ")
-        talk("Aussichten: ")
-        textAussichten = RbbWeather(163, True)
-        print(textAussichten.content)
-        talk(textAussichten.content)
     #
-    elif 'stop listening' in command:
+    elif 'stop listening' in command or 'stop listing' in command:
         talk('Bye, until next time.')
-        status.isRunning = False
+        JarvisStatus.isRunning = False
     else:
         talk('Entschuldigung, ich habe nicht verstanden.')
 
-while status.isRunning:
+while JarvisStatus.isRunning:
     print("...")# without it, it didn't stop listening
     try:
         runJarvis()
     except Exception as e:
-        talk(f"Entschuldigung, {status.engineUsed} konnte es nicht finden.") 
+        talk(f"Entschuldigung, {JarvisStatus.engineUsed} konnte es nicht finden.")
         print(e)

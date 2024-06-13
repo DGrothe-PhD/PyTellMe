@@ -35,9 +35,9 @@ class VTextStatus(VideoTextUtils):
         examples = []
         for station, aliases in VTextStatus.stationlist.items():
             examples.append(f"{station}:  {', '.join(aliases)}")
-        TELL_AVAILABLE_STATIONS = "\n".join(examples)
+        tellAvailableStations = "\n".join(examples)
         userWhichVideotext = "Welchen Sendetext möchten Sie aufrufen?\n[  Beispiele:  ]\n"
-        station = input(userWhichVideotext + TELL_AVAILABLE_STATIONS + "\n...:")
+        station = input(userWhichVideotext + tellAvailableStations + "\n...:")
         #
         if station.lower() in VTextStatus.aliasesErste:
             VTextStatus.textNews = ARDText(100)

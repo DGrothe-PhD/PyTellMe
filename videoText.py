@@ -53,9 +53,12 @@ class RbbText:
         """remove symbols"""
         return text.rstrip(' \xa0')
     #
+    def clearContent(self):
+        """just clear page content"""
+        self.content = ""
+    #
     def clearValues(self):
         """reset to default values"""
-        self.content = ""
         self.yellowPage = 100
         self.bluePage = 100
         self.lines = []
@@ -160,6 +163,7 @@ class RbbText:
             page (int): a value between 100 and 899
             sub (int, optional): Number of subpage. Defaults to 1.
         """
+        self.clearContent()
         self.extractPage(page, sub)
         self.appendContent()
         self.extractJumpingPages()
@@ -230,26 +234,25 @@ class RbbWeather(RbbText):
             self.rainexpect = text.strip('\xa0').rstrip('%').split(tabpattern)
             self.isRainForecast = False
     #
-    def __init__(self, page : int, expectTable=False):
-        """initialize RbbText on page `page` """
-        self.extractPage(page)
+    def __init__(self):
+        """read RBB Weather"""
+        super().__init__(162)
+        self.content += "\n\n"
+        self.extractPage(163)
         # process and prettify text
         # make sentences from table
-        if expectTable:
-            for x in self.lines:
-                if x.__contains__("&nbsp;&nbsp;&nbsp;&nbsp;"):
-                    self.extractTable(x)
-                elif x.__contains__(self.tablepattern):
-                    self.extractTable(x, self.tablepattern)
-                # by line: fluent text? append this line.
-                elif len(str(x)) > 1 :
-                    self.content += '\n' + str(x)
-            #for i in range(0, len(self.weekdays)):
-            for i, w in enumerate(self.weekdays):
-                self.content += f"\n{VideoTextUtils.wochentage[w]} morgens {self.mintemps[i]}, "
-                self.content += f"maximal {str(self.maxtemps[i])} Grad," + \
-                 f" Niederschlagswahrscheinlichkeit {self.rainexpect[i]} Prozent."
-        else:
-            self.appendContent()
+        for x in self.lines:
+            if x.__contains__("&nbsp;&nbsp;&nbsp;&nbsp;"):
+                self.extractTable(x)
+            elif x.__contains__(self.tablepattern):
+                self.extractTable(x, self.tablepattern)
+            # by line: fluent text? append this line.
+            elif len(str(x)) > 1 :
+                self.content += '\n' + str(x)
+        #for i in range(0, len(self.weekdays)):
+        for i, w in enumerate(self.weekdays):
+            self.content += f"\n{VideoTextUtils.wochentage[w]} morgens {self.mintemps[i]}, "
+            self.content += f"maximal {str(self.maxtemps[i])} Grad," + \
+             f" Niederschlagswahrscheinlichkeit {self.rainexpect[i]} Prozent."
         self.content = self.content.replace('-\n', '')
         self.extractJumpingPages()
