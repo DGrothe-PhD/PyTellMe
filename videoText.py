@@ -3,6 +3,7 @@ import requests
 from gazpacho import Soup
 
 # pylint: disable=R0903
+# pylint: disable=broad-except
 class VideoTextUtils:
     """general settings for videotext"""
     pageNotAccessible = "Diese Seite kann nicht angezeigt werden."
@@ -173,7 +174,6 @@ class RbbText:
         self.extractAndPreparePage(page)
 
 
-
 class ARDText(RbbText):
     """gets videotext from DasErste.de (ARD-Text)
     
@@ -258,3 +258,4 @@ class RbbWeather(RbbText):
         self.content = self.content.replace('-\n', '')
         self.extractJumpingPages()
 # pylint: enable=R0903
+# pylint: enable=broad-except

@@ -8,7 +8,7 @@ import pywhatkit
 
 import wikipedia
 
-#import traceback
+import sys, traceback
 
 from videoText import RbbWeather
 #from videoText import RbbText
@@ -29,12 +29,13 @@ try:
     engine.setProperty('voice', voices[0].id)
 except Exception as e:
     print("Sorry, pyttsx3 is not working.")
-    print(e)
+    traceback.print_exc(limit=2, file=sys.stdout)
     debugSwitchOffSpeaker = True
 
 class JarvisStatus:
     isRunning = True
     engineUsed = ""
+    countErrors = 0
     wikifound = []
 
 
@@ -53,18 +54,30 @@ def makeReadable(text):
     return re.sub(r'^(\d+)\.(\d{2}\s)', r'\1,\2', text, flags=re.MULTILINE)
 
 def takeCommand():
+    """listens to user talking and returns command"""
     command = ""
     try:
         with sr.Microphone() as source:
             print('listening...')
-            voice = listener.listen(source)
+            voice = listener.listen(source, phrase_time_limit=20)
             command = listener.recognize_google(voice, language="de-DE")
             command = command.lower()
             if 'jarvis' in command:
                 command = command.replace('jarvis', '')
                 print(command)
-    except:
+    except sr.UnknownValueError:
         pass
+    except sr.RequestError:
+        print("Request error")
+    except sr.WaitTimeoutError as k:
+        print("Zeit abgelaufen")
+    except Exception as e:
+        talk("Beim Einlesen des Sprachkommandos ist etwas schiefgelaufen.")
+        JarvisStatus.countErrors += 1
+        print(f"{JarvisStatus.countErrors} Fehler gefunden.")
+        traceback.print_exc(limit=5, file=sys.stdout)
+        if JarvisStatus.countErrors >= 3:
+            JarvisStatus.isRunning = False
     return command
 
 # Wikipedia
@@ -142,7 +155,8 @@ def runJarvis():
         print(textHeute.content)
         talk(textHeute.content)
     #
-    elif 'stop listening' in command or 'stop listing' in command:
+    elif 'stop listening' in command or 'stop listing' in command \
+    or (command.startswith('stop') and len(command)< 50):
         talk('Bye, until next time.')
         JarvisStatus.isRunning = False
     else:
@@ -152,6 +166,10 @@ while JarvisStatus.isRunning:
     print("...")# without it, it didn't stop listening
     try:
         runJarvis()
+    except KeyboardInterrupt:
+        print("Tschüs.")
+        talk("Tschüs, bis zum nächsten Mal.")
+        break
     except Exception as e:
         talk(f"Entschuldigung, {JarvisStatus.engineUsed} konnte es nicht finden.")
         print(e)

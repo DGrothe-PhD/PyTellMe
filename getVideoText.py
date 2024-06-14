@@ -121,6 +121,9 @@ while VTextStatus.isRunning:
             VTextStatus.page = int(newpage)
         #
         VTextStatus.browsePage()
+    except KeyboardInterrupt:
+        print("\nProgramm wird beendet.")
+        VTextStatus.isRunning = False
     except Exception as e:
         # HTTP error or anything
         print(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}")
