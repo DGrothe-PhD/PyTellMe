@@ -19,6 +19,8 @@ wikipedia.set_lang("de")
 locale.setlocale(locale.LC_TIME, "de_DE")
 
 listener = sr.Recognizer()
+# pylint: disable=C0103
+# pylint: disable=R0903
 debugSwitchOffSpeaker = False
 
 try:
@@ -37,13 +39,17 @@ class JarvisStatus:
 
 
 def talk(text):
+    """lets system's voice speak the text"""
     if debugSwitchOffSpeaker:
         return
-    """lets system's voice speak the text"""
     engine.say(text)
     engine.runAndWait()
 
 def makeReadable(text):
+    """Replace for better speaker functionality:
+     - Float written with comma to speak stock exchange prices 
+       as numbers instead of hours and minutes
+    """
     return re.sub(r'^(\d+)\.(\d{2}\s)', r'\1,\2', text, flags=re.MULTILINE)
 
 def takeCommand():
@@ -65,10 +71,10 @@ def takeCommand():
 class utilities:
     """basic functionality """
     @staticmethod
-    def searchWikipedia(text, showAll = False):
+    def searchWikipedia(text, show_all = False):
         JarvisStatus.engineUsed = "wikipedia"
         JarvisStatus.wikifound = wikipedia.search(text, results=3)
-        if len(JarvisStatus.wikifound) > 1 and not showAll:
+        if len(JarvisStatus.wikifound) > 1 and not show_all:
             answersFound = " oder ".join(JarvisStatus.wikifound)
             print(answersFound)
             talk(answersFound)
@@ -78,6 +84,7 @@ class utilities:
             talk(info)
 
 def runJarvis():
+    """main function"""
     command = takeCommand()
     print(command)
     #
@@ -148,3 +155,5 @@ while JarvisStatus.isRunning:
     except Exception as e:
         talk(f"Entschuldigung, {JarvisStatus.engineUsed} konnte es nicht finden.")
         print(e)
+# pylint: enable=C0103
+# pylint: enable=R0903

@@ -2,6 +2,7 @@ import re
 import requests
 from gazpacho import Soup
 
+# pylint: disable=R0903
 class VideoTextUtils:
     """general settings for videotext"""
     pageNotAccessible = "Diese Seite kann nicht angezeigt werden."
@@ -35,7 +36,7 @@ class RbbText:
     soup = Soup()
     lines = []
     peas = None
-    peas_style = None
+    peasStyle = None
     #
     topicPages = { \
      "a" : 303, "d" : 100, "e" : 125, "g" : 105, \
@@ -63,7 +64,7 @@ class RbbText:
         self.bluePage = 100
         self.lines = []
         self.peas = None
-        self.peas_style = None
+        self.peasStyle = None
     #
     def validateSoup(self, contents):
         """Validate Soup() object. 
@@ -95,29 +96,29 @@ class RbbText:
             if page > 899 or page < 100:
                 page = 100
             if '#' in self.api:
-                res = requests.get(self.api.replace('#', str(page)))
+                res = requests.get(self.api.replace('#', str(page)), timeout=20)
             else:
-                res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >1 else ""))
+                res = requests.get(self.api+str(page)+(f"&sub={sub}" if sub >1 else ""), timeout=20)
             res.raise_for_status()
             #gazpacho
             self.soup = Soup(res.text)
             peas = self.soup.find("span", {"class": "fg"}, partial=True)
-            peas_style = self.soup.find("span", {"class" : "style"}, partial=True)
+            peasStyle = self.soup.find("span", {"class" : "style"}, partial=True)
             #
             self.lines += [self.linefilter(x.text) for x in self.validateSoup(peas)]
             # gather info like 'Thema xyz on page 123'
-            for x in self.validateSoup(peas_style):
+            for x in self.validateSoup(peasStyle):
                 addline = self.linefilter(x.text)
                 alist = x.find("a")
                 alist = self.validateSoup(alist)
             #
                 for y in alist:
                     if len(y.html) > 1:
-                        linked_pages = re.findall(r'\d+', y.html)
-                        addline += " " + linked_pages[-1]
+                        linkedPages = re.findall(r'\d+', y.html)
+                        addline += " " + linkedPages[-1]
                 self.lines.append(addline)
-        except requests.exceptions.HTTPError as http_err:
-            print(f'HTTP Fehlermeldung: {http_err}')
+        except requests.exceptions.HTTPError as httpErr:
+            print(f'HTTP Fehlermeldung: {httpErr}')
         except requests.exceptions.ConnectionError:
             print(VideoTextUtils.pageNotAccessible)
         except requests.exceptions.Timeout:
@@ -256,3 +257,4 @@ class RbbWeather(RbbText):
              f" Niederschlagswahrscheinlichkeit {self.rainexpect[i]} Prozent."
         self.content = self.content.replace('-\n', '')
         self.extractJumpingPages()
+# pylint: enable=R0903
