@@ -8,7 +8,8 @@ import pywhatkit
 
 import wikipedia
 
-import sys, traceback
+import sys
+import traceback
 
 from videoText import RbbWeather
 #from videoText import RbbText
@@ -20,6 +21,7 @@ locale.setlocale(locale.LC_TIME, "de_DE")
 
 listener = sr.Recognizer()
 # pylint: disable=C0103
+# pylint: disable=W0718
 # pylint: disable=R0903
 debugSwitchOffSpeaker = False
 
@@ -69,15 +71,18 @@ def takeCommand():
         pass
     except sr.RequestError:
         print("Request error")
-    except sr.WaitTimeoutError as k:
+    except sr.WaitTimeoutError:
         print("Zeit abgelaufen")
-    except Exception as e:
+    #except KeyboardInterrupt:
+    #    print("Programmende")
+    #    JarvisStatus.isRunning = False
+    except Exception:
+        # rarely happening, however needs test before removal
         talk("Beim Einlesen des Sprachkommandos ist etwas schiefgelaufen.")
         JarvisStatus.countErrors += 1
-        print(f"{JarvisStatus.countErrors} Fehler gefunden.")
-        traceback.print_exc(limit=5, file=sys.stdout)
         if JarvisStatus.countErrors >= 3:
             JarvisStatus.isRunning = False
+        raise
     return command
 
 # Wikipedia
@@ -85,6 +90,7 @@ class utilities:
     """basic functionality """
     @staticmethod
     def searchWikipedia(text, show_all = False):
+        """get the first few lines of Wikipedia article"""
         JarvisStatus.engineUsed = "wikipedia"
         JarvisStatus.wikifound = wikipedia.search(text, results=3)
         if len(JarvisStatus.wikifound) > 1 and not show_all:
@@ -174,4 +180,5 @@ while JarvisStatus.isRunning:
         talk(f"Entschuldigung, {JarvisStatus.engineUsed} konnte es nicht finden.")
         print(e)
 # pylint: enable=C0103
+# pylint: enable=W0718
 # pylint: enable=R0903
