@@ -3,6 +3,7 @@
 
 from videoText import RbbText, ARDText, BayernText, NDRText, VideoTextUtils
 
+# pylint: disable=W0718
 
 class VTextStatus(VideoTextUtils):
     """settings and start"""
@@ -127,3 +128,5 @@ while VTextStatus.isRunning:
     except Exception as e:
         # HTTP error or anything
         print(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}")
+
+# pylint: enable=W0718

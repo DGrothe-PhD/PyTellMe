@@ -2,14 +2,15 @@ import datetime
 import locale
 import re
 
+import sys
+import platform
+import traceback
+
 import speech_recognition as sr
 import pyttsx3
 import pywhatkit
 
 import wikipedia
-
-import sys
-import traceback
 
 from videoText import RbbWeather
 #from videoText import RbbText
@@ -23,30 +24,49 @@ listener = sr.Recognizer()
 # pylint: disable=C0103
 # pylint: disable=W0718
 # pylint: disable=R0903
-debugSwitchOffSpeaker = False
 
-try:
-    engine = pyttsx3.init()
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[0].id)
-except Exception as e:
-    print("Sorry, pyttsx3 is not working.")
-    traceback.print_exc(limit=2, file=sys.stdout)
-    debugSwitchOffSpeaker = True
 
 class JarvisStatus:
+    """initialize speaker and other settings"""
+    debugSwitchOffSpeaker = False
+    engine = None
     isRunning = True
     engineUsed = ""
     countErrors = 0
     wikifound = []
+    speak = None
+    def initializeSpeaker():
+        try:
+            JarvisStatus.engine = pyttsx3.init()
+            voices = JarvisStatus.engine.getProperty('voices')
+            JarvisStatus.engine.setProperty('voice', voices[0].id)
+        except RuntimeError:
+            JarvisStatus.debugSwitchOffSpeaker = True
+            # py3-ttsx 3.5 and its `parent` has one
+            pass
+        except Exception as e:
+            print("Sorry, pyttsx3 is not working.")
+            traceback.print_exc(limit=2, file=sys.stdout)
+            JarvisStatus.debugSwitchOffSpeaker = True
+        #
+        # Windows fallback if pyttsx3 fails
+        try:
+            if JarvisStatus.debugSwitchOffSpeaker and platform.system() == 'Windows':
+                from win32com.client import Dispatch
+                JarvisStatus.speak = Dispatch("SAPI.SpVoice").Speak
+        except:
+            traceback.print_exc(limit=2, file=sys.stdout)
 
+JarvisStatus.initializeSpeaker()
 
 def talk(text):
     """lets system's voice speak the text"""
-    if debugSwitchOffSpeaker:
+    if JarvisStatus.debugSwitchOffSpeaker and (JarvisStatus.speak is not None):
+        JarvisStatus.speak(text)
+    elif JarvisStatus.debugSwitchOffSpeaker:
         return
-    engine.say(text)
-    engine.runAndWait()
+    JarvisStatus.engine.say(text)
+    JarvisStatus.engine.runAndWait()
 
 def makeReadable(text):
     """Replace for better speaker functionality:
