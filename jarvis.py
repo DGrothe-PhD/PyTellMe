@@ -21,10 +21,19 @@ wikipedia.set_lang("de")
 locale.setlocale(locale.LC_TIME, "de_DE")
 
 listener = sr.Recognizer()
+
 # pylint: disable=C0103
 # pylint: disable=W0718
 # pylint: disable=R0903
+# pylint: disable=E0211
+# pylint: disable=E1102
 
+# pylint: disable=E0401
+### E0401 as pylint (GitHub/Linux) cannot install Windows package
+if platform.system() == 'Windows':
+    from win32com.client import Dispatch
+# pylint: enable=E0401
+### no issue on a real system though
 
 class JarvisStatus:
     """initialize speaker and other settings"""
@@ -35,7 +44,9 @@ class JarvisStatus:
     countErrors = 0
     wikifound = []
     speak = None
+    #
     def initializeSpeaker():
+        """setup of speaking functionality"""
         try:
             JarvisStatus.engine = pyttsx3.init()
             voices = JarvisStatus.engine.getProperty('voices')
@@ -43,8 +54,7 @@ class JarvisStatus:
         except RuntimeError:
             JarvisStatus.debugSwitchOffSpeaker = True
             # py3-ttsx 3.5 and its `parent` has one
-            pass
-        except Exception as e:
+        except Exception:
             print("Sorry, pyttsx3 is not working.")
             traceback.print_exc(limit=2, file=sys.stdout)
             JarvisStatus.debugSwitchOffSpeaker = True
@@ -52,9 +62,8 @@ class JarvisStatus:
         # Windows fallback if pyttsx3 fails
         try:
             if JarvisStatus.debugSwitchOffSpeaker and platform.system() == 'Windows':
-                from win32com.client import Dispatch
                 JarvisStatus.speak = Dispatch("SAPI.SpVoice").Speak
-        except:
+        except Exception:
             traceback.print_exc(limit=2, file=sys.stdout)
 
 JarvisStatus.initializeSpeaker()
@@ -64,9 +73,10 @@ def talk(text):
     if JarvisStatus.debugSwitchOffSpeaker and (JarvisStatus.speak is not None):
         JarvisStatus.speak(text)
     elif JarvisStatus.debugSwitchOffSpeaker:
-        return
-    JarvisStatus.engine.say(text)
-    JarvisStatus.engine.runAndWait()
+        pass
+    else:
+        JarvisStatus.engine.say(text)
+        JarvisStatus.engine.runAndWait()
 
 def makeReadable(text):
     """Replace for better speaker functionality:
@@ -202,3 +212,5 @@ while JarvisStatus.isRunning:
 # pylint: enable=C0103
 # pylint: enable=W0718
 # pylint: enable=R0903
+# pylint: enable=E0211
+# pylint: disable=E1102
