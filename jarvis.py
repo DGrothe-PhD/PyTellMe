@@ -30,10 +30,13 @@ listener = sr.Recognizer()
 
 # pylint: disable=E0401
 ### E0401 as pylint (GitHub/Linux) cannot install Windows package
-if platform.system() == 'Windows':
-    from win32com.client import Dispatch
-# pylint: enable=E0401
-### no issue on a real system though
+
+def is_windows_platform() -> bool:
+    return platform.system() == 'Windows'
+
+class SpeakerInitializeError(Exception):
+    """ Represent speaker initialization errors"""
+
 
 class JarvisStatus:
     """initialize speaker and other settings"""
@@ -44,39 +47,61 @@ class JarvisStatus:
     countErrors = 0
     wikifound = []
     speak = None
-    #
-    def initializeSpeaker():
-        """setup of speaking functionality"""
+
+    @staticmethod
+    def initializePyTTSSpeaker() -> bool:
         try:
             JarvisStatus.engine = pyttsx3.init()
             voices = JarvisStatus.engine.getProperty('voices')
             JarvisStatus.engine.setProperty('voice', voices[0].id)
-        except RuntimeError:
-            JarvisStatus.debugSwitchOffSpeaker = True
-            # py3-ttsx 3.5 and its `parent` has one
-        except Exception:
+        except (RuntimeError, Exception):
             print("Sorry, pyttsx3 is not working.")
+            # goal: if debug mode tell me, else keep quiet
             traceback.print_exc(limit=2, file=sys.stdout)
-            JarvisStatus.debugSwitchOffSpeaker = True
-        #
-        # Windows fallback if pyttsx3 fails
+            JarvisStatus.engine = None
+            return False
+        return True
+
+    @staticmethod
+    def initializeSpVoiceSpeaker() -> bool:
+        if not is_windows_platform():
+            raise SpeakerInitializeError("Cannot initialize SpVoice. Windows platform required")
+        from win32com.client import Dispatch
         try:
-            if JarvisStatus.debugSwitchOffSpeaker and platform.system() == 'Windows':
-                JarvisStatus.speak = Dispatch("SAPI.SpVoice").Speak
+            JarvisStatus.speak = Dispatch("SAPI.SpVoice").Speak
         except Exception:
             traceback.print_exc(limit=2, file=sys.stdout)
+            raise SpeakerInitializeError("Cannot initialize SpVoice")
+        return True
+
+    @staticmethod
+    def initializeSpeaker() -> bool:
+        """setup of speaking functionality"""
+        try:
+            # second member will be evaluated only if first will fail
+            return JarvisStatus.initializePyTTSSpeaker() or JarvisStatus.initializeSpVoiceSpeaker()
+        except SpeakerInitializeError:
+            JarvisStatus.debugSwitchOffSpeaker = True
+            return False
+
 
 JarvisStatus.initializeSpeaker()
 
 def talk(text):
     """lets system's voice speak the text"""
-    if JarvisStatus.debugSwitchOffSpeaker and (JarvisStatus.speak is not None):
-        JarvisStatus.speak(text)
-    elif JarvisStatus.debugSwitchOffSpeaker:
-        pass
-    else:
+    if JarvisStatus.engine:
+        #and not JarvisStatus.debugSwitchOffSpeaker:
         JarvisStatus.engine.say(text)
         JarvisStatus.engine.runAndWait()
+    elif JarvisStatus.speak:
+        JarvisStatus.speak(text)
+    ''' legacy code
+    if JarvisStatus.debugSwitchOffSpeaker and JarvisStatus.speak:
+        JarvisStatus.speak(text)
+    elif not JarvisStatus.debugSwitchOffSpeaker:
+        JarvisStatus.engine.say(text)
+        JarvisStatus.engine.runAndWait()
+    '''
 
 def makeReadable(text):
     """Replace for better speaker functionality:
@@ -92,17 +117,18 @@ def takeCommand():
         with sr.Microphone() as source:
             print('listening...')
             voice = listener.listen(source, phrase_time_limit=20)
-            command = listener.recognize_google(voice, language="de-DE")
-            command = command.lower()
+            command = listener.recognize_google(voice, language="de-DE").lower()
             if 'jarvis' in command:
                 command = command.replace('jarvis', '')
-                print(command)
+            return command
     except sr.UnknownValueError:
-        pass
+        return ""
     except sr.RequestError:
         print("Request error")
+        return ""
     except sr.WaitTimeoutError:
         print("Zeit abgelaufen")
+        return ""
     #except KeyboardInterrupt:
     #    print("Programmende")
     #    JarvisStatus.isRunning = False
@@ -113,7 +139,6 @@ def takeCommand():
         if JarvisStatus.countErrors >= 3:
             JarvisStatus.isRunning = False
         raise
-    return command
 
 # Wikipedia
 class utilities:
@@ -213,4 +238,6 @@ while JarvisStatus.isRunning:
 # pylint: enable=W0718
 # pylint: enable=R0903
 # pylint: enable=E0211
-# pylint: disable=E1102
+# pylint: enable=E1102
+# pylint: enable=E0401
+### no issue on a real system though
