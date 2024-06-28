@@ -22,20 +22,22 @@ locale.setlocale(locale.LC_TIME, "de_DE")
 
 listener = sr.Recognizer()
 
-# pylint: disable=C0103
-# pylint: disable=W0718
-# pylint: disable=R0903
-# pylint: disable=E0211
+# pylint: disable=invalid-name
+# pylint: disable=broad-exception-caught
+# pylint: disable=too-few-public-methods
+
+### disable false positives of not callable
 # pylint: disable=E1102
 
 # pylint: disable=E0401
 ### E0401 as pylint (GitHub/Linux) cannot install Windows package
 
 def is_windows_platform() -> bool:
+    """True if system is Windows"""
     return platform.system() == 'Windows'
 
 class SpeakerInitializeError(Exception):
-    """ Represent speaker initialization errors"""
+    """Represent speaker initialization errors"""
 
 
 class JarvisStatus:
@@ -50,6 +52,7 @@ class JarvisStatus:
 
     @staticmethod
     def initializePyTTSSpeaker() -> bool:
+        """Tries to initialize py3-tts speaker"""
         try:
             JarvisStatus.engine = pyttsx3.init()
             voices = JarvisStatus.engine.getProperty('voices')
@@ -64,14 +67,15 @@ class JarvisStatus:
 
     @staticmethod
     def initializeSpVoiceSpeaker() -> bool:
+        """Tries to initialize Windows speaker"""
         if not is_windows_platform():
             raise SpeakerInitializeError("Cannot initialize SpVoice. Windows platform required")
         from win32com.client import Dispatch
         try:
             JarvisStatus.speak = Dispatch("SAPI.SpVoice").Speak
-        except Exception:
+        except Exception as exc:
             traceback.print_exc(limit=2, file=sys.stdout)
-            raise SpeakerInitializeError("Cannot initialize SpVoice")
+            raise SpeakerInitializeError("Cannot initialize SpVoice") from exc
         return True
 
     @staticmethod
@@ -95,13 +99,6 @@ def talk(text):
         JarvisStatus.engine.runAndWait()
     elif JarvisStatus.speak:
         JarvisStatus.speak(text)
-    ''' legacy code
-    if JarvisStatus.debugSwitchOffSpeaker and JarvisStatus.speak:
-        JarvisStatus.speak(text)
-    elif not JarvisStatus.debugSwitchOffSpeaker:
-        JarvisStatus.engine.say(text)
-        JarvisStatus.engine.runAndWait()
-    '''
 
 def makeReadable(text):
     """Replace for better speaker functionality:
@@ -234,10 +231,10 @@ while JarvisStatus.isRunning:
     except Exception as e:
         talk(f"Entschuldigung, {JarvisStatus.engineUsed} konnte es nicht finden.")
         print(e)
-# pylint: enable=C0103
-# pylint: enable=W0718
-# pylint: enable=R0903
-# pylint: enable=E0211
+
+# pylint: disable=invalid-name
+# pylint: enable=broad-exception-caught
+# pylint: enable=too-few-public-methods
 # pylint: enable=E1102
 # pylint: enable=E0401
 ### no issue on a real system though
