@@ -1,6 +1,6 @@
-import sys
 import platform
-import traceback
+#import traceback
+#import sys
 
 import pyttsx3
 
@@ -24,7 +24,7 @@ class SpeakerStatus:
     debugSwitchOffSpeaker = False
     engine = None
     speak = None
-    
+    #
     @staticmethod
     def is_windows_platform() -> bool:
         """True if system is Windows"""
@@ -63,7 +63,8 @@ class SpeakerStatus:
         """setup of speaking functionality"""
         try:
             # second member will be evaluated only if first will fail
-            return SpeakerStatus.initializePyTTSSpeaker() or SpeakerStatus.initializeSpVoiceSpeaker()
+            return SpeakerStatus.initializePyTTSSpeaker() \
+             or  SpeakerStatus.initializeSpVoiceSpeaker()
         except SpeakerInitializeError:
             print("No speaker has been configured.")
             SpeakerStatus.debugSwitchOffSpeaker = True
