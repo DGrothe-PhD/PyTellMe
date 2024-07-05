@@ -1,9 +1,16 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+from speakerSetup import SpeakerStatus
 from videoText import RbbText, ARDText, BayernText, NDRText, VideoTextUtils
 
 # pylint: disable=W0718
+
+speaker = SpeakerStatus()
+
+def printAndSay(text):
+    print(text)
+    speaker.talk(text)
 
 class VTextStatus(VideoTextUtils):
     """settings and start"""
@@ -31,8 +38,8 @@ class VTextStatus(VideoTextUtils):
     @staticmethod
     def start():
         """let user choose TV station for teletext """
-        print(VTextStatus.welcome)
-        print(VTextStatus.limitationNotice)
+        printAndSay(VTextStatus.welcome)
+        printAndSay(VTextStatus.limitationNotice)
         examples = []
         for station, aliases in VTextStatus.stationlist.items():
             examples.append(f"{station}:  {', '.join(aliases)}")
@@ -65,7 +72,7 @@ class VTextStatus(VideoTextUtils):
             txConv = txConv.replace(k,v)
         for k, v in VTextStatus.aftermapping:
             txConv = txConv.replace(k,v)
-        print(txConv)
+        printAndSay(txConv)
     #
     @staticmethod
     def browsePage():
@@ -77,7 +84,7 @@ class VTextStatus(VideoTextUtils):
 VTextStatus.start()
 
 while VTextStatus.isRunning:
-    print("...")
+    printAndSay("...")
     #
     try:
         newpage = input("Welche Seite lesen?")
@@ -87,7 +94,7 @@ while VTextStatus.isRunning:
         if newpage == "":
             continue
         if VTextStatus.hasrun and (newpage == "."):
-            print("Seite wird neu geladen")
+            printAndSay("Seite wird neu geladen")
             VTextStatus.browsePage()
             continue
         #
@@ -96,8 +103,8 @@ while VTextStatus.isRunning:
             VTextStatus.textNews.extractAndPreparePage(\
              int(VTextStatus.page), VTextStatus.sub \
             )
-            print(f"Blättern zu Seite {VTextStatus.page}")
-            print(VTextStatus.textNews.content)
+            printAndSay(f"Blättern zu Seite {VTextStatus.page}")
+            printAndSay(VTextStatus.textNews.content)
             continue
         # show new page
         VTextStatus.sub = 1
@@ -114,7 +121,7 @@ while VTextStatus.isRunning:
             if VTextStatus.page < 899:
                 VTextStatus.page += 1
         elif not newpage.isdigit():
-            print("Sorry, das ist keine Seitenzahl.")
+            printAndSay("Sorry, das ist keine Seitenzahl.")
             continue
         else:
             #arriving here, newpage is a number
@@ -123,10 +130,10 @@ while VTextStatus.isRunning:
         #
         VTextStatus.browsePage()
     except KeyboardInterrupt:
-        print("\nProgramm wird beendet.")
+        printAndSay("\nProgramm wird beendet.")
         VTextStatus.isRunning = False
     except Exception as e:
         # HTTP error or anything
-        print(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}")
+        printAndSay(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}")
 
 # pylint: enable=W0718
