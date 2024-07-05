@@ -9,6 +9,7 @@ from videoText import RbbText, ARDText, BayernText, NDRText, VideoTextUtils
 speaker = SpeakerStatus()
 
 def printAndSay(text):
+    """first print, then say (if speaker/module is working)"""
     print(text)
     speaker.talk(text)
 
