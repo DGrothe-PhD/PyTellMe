@@ -1,10 +1,19 @@
 # PyTellMe
 Ziel dieses kleinen Projekts ist eine 
 Verbesserung der Nutzbarkeit alltäglicher Infoquellen wie Videotext für Sehbehinderte.
+Vorhandene lokale Textdateien sollen dazukommen.
 
+## Ausgangspunkt
 Bisher ist der Videotext am TV-Gerät nur für Lesende oder unter Zuhilfenahme elektronischer Sehhilfen zu nutzen. 
 Das ist sehr umständlich. Ebenso wie der (häufig anfangs ungewohnte) Umgang mit alles umfassenden Sprachassistenzprogrammen wie NVDA.
- 
+
+Vorlesegeräte wie Optelec oder Tools wie NVDA lesen meist ALLES vor, auch nutzlose Randinformationen zu einer Banktransaktion und das dauert … 🐌
+Was bei Verwendern von Vorlesegeräten oft dazu, doch wieder Freunde und Helfer um Auskunft zu bitten, weil es einfach schneller geht.
+Was aber kann ein Nutzer tun, wenn gerade niemand da ist?
+
+## Warum Videotext?
+Videotext hat ein einheitliches Schema und bietet Alltagsinformationen zu vielen Themen.
+Das macht es einfacher, Infos hieraus statt aus verschiedenen Webseiten zu entnehmen.
 Da Videotext häufig auch online abrufbar ist, braucht man nur einen PC mit Python und dieses Projekt.
 
 So lassen sich Fußballergebnisse, der Wetterbericht oder Aktienkurse abfragen und werden vorgelesen.
