@@ -34,6 +34,7 @@ class RbbText:
     content = ""
     yellowPage = 100
     bluePage = 100
+    currentPage = 100
     soup = Soup()
     lines = []
     peas = None
@@ -169,8 +170,29 @@ class RbbText:
         self.extractPage(page, sub)
         self.appendContent()
         self.extractJumpingPages()
+    
+    def hasTopicPage(self, topicChar):
+        """Returns true if there is a topic page which is referenced by the character `topicChar`.
+        """
+        try:
+            return topicChar in self.topicPages
+        except AttributeError:
+            return False
+    #
+    
+    def browseTopicPage(self, topicChar):
+        """Opens the topic page which is referenced by the character `topicChar`.
+            If that page does not exist, opens page 100.
+        """
+        self.currentPage = self.topicPages.get(topicChar, 100)
+        self.extractAndPreparePage(self.currentPage)
+    #
+    def getPageNumber(self):
+        """returns page number"""
+        return self.currentPage
     #
     def __init__(self, page : int):
+        self.currentPage = page
         self.extractAndPreparePage(page)
 
 

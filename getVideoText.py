@@ -121,6 +121,13 @@ while VTextStatus.isRunning:
         elif newpage[0] == '+':
             if VTextStatus.page < 899:
                 VTextStatus.page += 1
+        elif VTextStatus.textNews.hasTopicPage(newpage[0]):
+            VTextStatus.hasrun = True
+            VTextStatus.textNews.browseTopicPage(newpage[0])
+            VTextStatus.page = VTextStatus.textNews.currentPage
+            printAndSay(f"Blättern zu Seite {VTextStatus.page}")
+            printAndSay(VTextStatus.textNews.content)
+            continue
         elif not newpage.isdigit():
             printAndSay("Sorry, das ist keine Seitenzahl.")
             continue
