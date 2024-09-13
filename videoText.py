@@ -166,6 +166,7 @@ class RbbText:
             page (int): a value between 100 and 899
             sub (int, optional): Number of subpage. Defaults to 1.
         """
+        self.currentPage = page
         self.clearContent()
         self.extractPage(page, sub)
         self.appendContent()
@@ -184,8 +185,8 @@ class RbbText:
         """Opens the topic page which is referenced by the character `topicChar`.
             If that page does not exist, opens page 100.
         """
-        self.currentPage = self.topicPages.get(topicChar, 100)
-        self.extractAndPreparePage(self.currentPage)
+        chosenPage = self.topicPages.get(topicChar, 100)
+        self.extractAndPreparePage(chosenPage)
     #
     def getPageNumber(self):
         """returns page number"""
@@ -227,6 +228,9 @@ class BayernText(RbbText):
 class RbbWeather(RbbText):
     """gets and formats weather forecast from RbbText"""
     tablepattern = "\xa0\xa0\xa0\xa0"
+    timeTermsList = ["Nachts", "Abends", "Nachmittags", "Heute", \
+      "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Sonnabend", "Samstag", "Sonntag",
+    ]
     weekdays = []
     mintemps = []
     maxtemps = []
@@ -270,14 +274,18 @@ class RbbWeather(RbbText):
             elif x.__contains__(self.tablepattern):
                 self.extractTable(x, self.tablepattern)
             # by line: fluent text? append this line.
-            elif len(str(x)) > 1 :
+            elif len(str(x)) > 1 and any(timeterms in str(x) for timeterms in self.timeTermsList):
                 self.content += '\n' + str(x)
+            elif len(str(x)) > 1:
+                self.content += '\n' + str(x.strip())
         #for i in range(0, len(self.weekdays)):
         for i, w in enumerate(self.weekdays):
             self.content += f"\n{VideoTextUtils.wochentage[w]} morgens {self.mintemps[i]}, "
             self.content += f"maximal {str(self.maxtemps[i])} Grad," + \
              f" Niederschlagswahrscheinlichkeit {self.rainexpect[i]} Prozent."
         self.content = self.content.replace('-\n', '')
+        self.content = self.content.replace('343', '')
+        self.content = self.content.replace('rbb-Programmhighlights', '')
         self.extractJumpingPages()
 # pylint: enable=R0903
 # pylint: enable=broad-except

@@ -15,10 +15,10 @@ def printAndSay(text):
 
 class VTextStatus(VideoTextUtils):
     """settings and start"""
-    welcome = "Hallo, ich bin dein Videotext-Assistent." + \
+    welcome = "Hallo, ich bin dein Videotext-Assistent.\n" + \
      "Eingabe Seitenzahl (dreistellig)," + \
      "Beenden durch die Eingabe 'stop'."
-    limitationNotice = "Bis jetzt kann ich nur eine Auswahl von Videotexten."
+    limitationNotice = "Auswahl: Das Erste, Bayern, RBB."
     isRunning = True
     hasrun = False
     page = 100
