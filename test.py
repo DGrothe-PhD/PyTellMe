@@ -1,11 +1,12 @@
 from speakerSetup import SpeakerStatus
 
+#pylint: disable=C0103
 speaker = SpeakerStatus()
 
 unicode_smallcapsdic={
-  'ᴀ' : 'a', 'ʙ' : 'b', 'ᴄ': 'c', 'ᴅ' : 'd', 'ᴇ' : 'e', 
-  chr(42800) : 'f', 'ғ' : 'f', 'ɢ' : 'g', 
-  'ʜ': 'h', 'ɪ' : 'i', 'ᴊ' : 'j', 'ᴋ' : 'k', 'ʟ' : 'l', 'ᴍ': 'm', 'ɴ': 'n', 
+  'ᴀ' : 'a', 'ʙ' : 'b', 'ᴄ': 'c', 'ᴅ' : 'd', 'ᴇ' : 'e',
+  chr(42800) : 'f', 'ғ' : 'f', 'ɢ' : 'g',
+  'ʜ': 'h', 'ɪ' : 'i', 'ᴊ' : 'j', 'ᴋ' : 'k', 'ʟ' : 'l', 'ᴍ': 'm', 'ɴ': 'n',
   'ᴏ' : 'o', 'ᴘ' : 'p', 'ǫ' : 'q',
   'ʀ': 'r', chr(0xA731): 's', 'ᴛ': 't', 'ᴜ' : 'u', 'ᴠ' : 'v', 'ᴡ' : 'w',
   'x': 'x', 'ʏ' : 'y', 'ᴢ' : 'z'
@@ -34,3 +35,5 @@ for to_replace, replacement in unicode_smallcapsdic.items():
 # AFTER CONVERSION
 for saying in [headline, srtest, fox, franz]:
     speaker.talk(saying)
+
+#pylint: enable=C0103
