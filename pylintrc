@@ -6,6 +6,8 @@ method-naming-style=camelCase
 variable-naming-style=camelCase
 class-naming-style=PascalCase
 module-naming-style=camelCase
+argument-naming-style=camelCase
+constant-naming-style=camelCase
 
 disable=missing-final-newline,
     missing-module-docstring,

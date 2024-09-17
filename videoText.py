@@ -4,6 +4,8 @@ from gazpacho import Soup
 
 # pylint: disable=R0903
 # pylint: disable=broad-except
+# pylint: disable=too-many-instance-attributes
+
 class VideoTextUtils:
     """general settings for videotext"""
     pageNotAccessible = "Diese Seite kann nicht angezeigt werden."
@@ -171,7 +173,7 @@ class RbbText:
         self.extractPage(page, sub)
         self.appendContent()
         self.extractJumpingPages()
-    
+    #
     def hasTopicPage(self, topicChar):
         """Returns true if there is a topic page which is referenced by the character `topicChar`.
         """
@@ -180,7 +182,6 @@ class RbbText:
         except AttributeError:
             return False
     #
-    
     def browseTopicPage(self, topicChar):
         """Opens the topic page which is referenced by the character `topicChar`.
             If that page does not exist, opens page 100.
