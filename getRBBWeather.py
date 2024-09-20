@@ -1,4 +1,4 @@
-#
+import sys
 from speakerSetup import SpeakerStatus
 from videoText import RbbWeather
 
@@ -17,4 +17,4 @@ try:
     printAndSay(textHeute.content)
 except KeyboardInterrupt:
     print("Auf Wiedersehen!")
-    quit()
+    sys.exit()
