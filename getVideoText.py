@@ -92,6 +92,12 @@ while VTextStatus.isRunning:
         if newpage == "stop":
             VTextStatus.isRunning = False
             continue
+        if newpage == "++":
+            speaker.speakFaster()
+            continue
+        if newpage == "--":
+            speaker.speakSlower()
+            continue
         if newpage == "":
             continue
         if VTextStatus.hasrun and (newpage == "."):
