@@ -30,58 +30,80 @@ class SpeakerStatus:
         """True if system is Windows"""
         return platform.system() == 'Windows'
 
-    @staticmethod
-    def initializePyTTSSpeaker() -> bool:
+    @classmethod
+    def initializePyTTSSpeaker(cls) -> bool:
         """Tries to initialize py3-tts speaker"""
         try:
-            SpeakerStatus.engine = pyttsx3.init()
-            voices = SpeakerStatus.engine.getProperty('voices')
-            SpeakerStatus.engine.setProperty('voice', voices[0].id)
+            cls.engine = pyttsx3.init()
+            voices = cls.engine.getProperty('voices')
+            cls.engine.setProperty('voice', voices[0].id)
         except (RuntimeError, Exception):
             print("Sorry, pyttsx3 is not working.")
             # goal: if debug mode tell me, else keep quiet
             #traceback.print_exc(limit=2, file=sys.stdout)
-            SpeakerStatus.engine = None
+            cls.engine = None
             return False
         return True
 
-    @staticmethod
-    def initializeSpVoiceSpeaker() -> bool:
+    @classmethod
+    def initializeSpVoiceSpeaker(cls) -> bool:
         """Tries to initialize Windows speaker"""
-        if not SpeakerStatus.is_windows_platform():
+        if not cls.is_windows_platform():
             raise SpeakerInitializeError("Cannot initialize SpVoice. Windows platform required")
         from win32com.client import Dispatch
         try:
-            SpeakerStatus.speak = Dispatch("SAPI.SpVoice").Speak
+            cls.speak = Dispatch("SAPI.SpVoice").Speak
         except Exception as exc:
             #traceback.print_exc(limit=2, file=sys.stdout)
             raise SpeakerInitializeError("Cannot initialize SpVoice") from exc
         return True
 
-    @staticmethod
-    def initializeSpeaker() -> bool:
+    @classmethod
+    def initializeSpeaker(cls) -> bool:
         """setup of speaking functionality"""
         try:
             # second member will be evaluated only if first will fail
-            return SpeakerStatus.initializePyTTSSpeaker() \
-             or  SpeakerStatus.initializeSpVoiceSpeaker()
+            return cls.initializePyTTSSpeaker() \
+             or  cls.initializeSpVoiceSpeaker()
         except SpeakerInitializeError:
             print("No speaker has been configured.")
-            SpeakerStatus.debugSwitchOffSpeaker = True
+            cls.debugSwitchOffSpeaker = True
             return False
 
-    def __init__(self):
-        SpeakerStatus.initializeSpeaker()
+    #def __init__(self):
+    #    SpeakerStatus.initializeSpeaker()
 
-    def talk(self, text):
+    @classmethod
+    def talk(cls, text):
         """lets system's voice speak the text"""
-        if SpeakerStatus.engine:
-            #and not SpeakerStatus.debugSwitchOffSpeaker:
-            SpeakerStatus.engine.say(text)
-            SpeakerStatus.engine.runAndWait()
-        elif SpeakerStatus.speak:
-            SpeakerStatus.speak(text)
+        try:
+            if cls.engine:
+                #and not SpeakerStatus.debugSwitchOffSpeaker:
+                cls.engine.say(text)
+                cls.engine.runAndWait()
+            elif cls.speak:
+                cls.speak(text)
+        except KeyboardInterrupt:
+            if cls.engine:
+                cls.engine.stop()
+            else:
+                pass
 
+    @classmethod
+    def speakFaster(cls):
+        """increase words per minute rate"""
+        rate = cls.engine.getProperty('rate')
+        cls.engine.setProperty('rate', rate+50)
+        print("Geschwindigkeit auf "+str(cls.engine.getProperty('rate')))
+
+    @classmethod
+    def speakSlower(cls):
+        """increase words per minute rate"""
+        rate = cls.engine.getProperty('rate')
+        print(cls.engine.getProperty('rate'))
+        print(rate)
+        cls.engine.setProperty('rate', rate-50)
+        print("Geschwindigkeit auf "+str(cls.engine.getProperty('rate')))
 
 
 # pylint: disable=invalid-name

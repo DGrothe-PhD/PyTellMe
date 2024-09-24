@@ -1,10 +1,10 @@
 import sys
-from speakerSetup import SpeakerStatus
+from speakerSetup import SpeakerStatus as speaker
 from videoText import RbbWeather
 
 # pylint: disable=W0718
 
-speaker = SpeakerStatus()
+speaker.initializeSpeaker()
 
 def printAndSay(text):
     """first print, then say (if speaker/module is working)"""

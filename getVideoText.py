@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from speakerSetup import SpeakerStatus
+from speakerSetup import SpeakerStatus as speaker
 from videoText import RbbText, ARDText, BayernText, NDRText, VideoTextUtils
 
 # pylint: disable=W0718
 
-speaker = SpeakerStatus()
+speaker.initializeSpeaker()
 
 def printAndSay(text):
     """first print, then say (if speaker/module is working)"""
