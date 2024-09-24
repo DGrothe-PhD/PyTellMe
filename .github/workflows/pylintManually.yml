@@ -1,4 +1,4 @@
-name: Pylint
+name: Pylint Manually
 
 on:
   workflow_dispatch
