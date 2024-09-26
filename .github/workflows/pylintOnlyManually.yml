@@ -1,4 +1,4 @@
-name: Pylint Manually
+name: Pylint Without Badge Manually
 
 on:
   workflow_dispatch
