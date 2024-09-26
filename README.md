@@ -1,5 +1,6 @@
 # PyTellMe
 [![Pylint](https://github.com/DGrothe-PhD/PyTellMe/actions/workflows/pylint.yml/badge.svg)](https://github.com/DGrothe-PhD/PyTellMe/actions/workflows/pylint.yml)
+&nbsp; [![pylint score](https://R2-bucket-url/badge_dir_with_uniq_name/my-code/pylint/pylint_scan.svg)](https://github.com/YaoYinYing/pylint-github-action)
 
 Ziel dieses kleinen Projekts ist eine 
 Verbesserung der Nutzbarkeit alltäglicher Infoquellen wie Videotext für Sehbehinderte.
