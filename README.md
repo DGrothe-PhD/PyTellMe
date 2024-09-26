@@ -1,4 +1,6 @@
 # PyTellMe
+[![Pylint](https://github.com/DGrothe-PhD/PyTellMe/actions/workflows/pylint.yml/badge.svg)](https://github.com/DGrothe-PhD/PyTellMe/actions/workflows/pylint.yml)
+
 Ziel dieses kleinen Projekts ist eine 
 Verbesserung der Nutzbarkeit alltäglicher Infoquellen wie Videotext für Sehbehinderte.
 Vorhandene lokale Textdateien sollen dazukommen.
@@ -48,5 +50,3 @@ Further features &rarr; `jarvis.py`
 * Speaker functionality implemented using `pyttsx3`.
 * Speech-recognition functionality:<br>
 I am not reinventing the wheel, but starting from a German translation of [@riitikiitkgp](https://github.com/riitikiitkgp/)'s [Jarvis-Voice-Assistant](https://github.com/riitikiitkgp/Jarvis-Voice-Assistant).
-
-[![Pylint](https://github.com/DGrothe-PhD/PyTellMe/actions/workflows/pylint.yml/badge.svg)](https://github.com/DGrothe-PhD/PyTellMe/actions/workflows/pylint.yml)
