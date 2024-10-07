@@ -2,12 +2,12 @@ name: Pylint yyybadge
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '*.py'
-  pull_request:
-    paths:
-      - '*.py'
+  #push:
+  #  paths:
+  #    - '*.py'
+  #pull_request:
+  #  paths:
+  #    - '*.py'
 
 jobs:
   build:
