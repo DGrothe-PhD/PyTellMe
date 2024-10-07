@@ -100,6 +100,7 @@ class SpeakerStatus:
 
     @classmethod
     def talkInLanguage(cls, text, lang="system_default", rate = 200):
+        """Switches to a different language and speaks text"""
         if not cls.engine:
             if cls.speak:
                 cls.speak(text)
@@ -138,13 +139,13 @@ class SpeakerStatus:
         for voice in voices:
             if foundvoices == 3:
                 break
-            if not "German" in cls.voices_dict and voice.name.__contains__("German"):
+            if "German" not in cls.voices_dict and "German" in voice.name:
                 cls.voices_dict["German"] = voice.id
                 foundvoices += 1
-            if not "French" in cls.voices_dict and voice.name.__contains__("French"):
+            if "French" not in cls.voices_dict and "French" in voice.name:
                 cls.voices_dict["French"] = voice.id
                 foundvoices += 1
-            elif not "English" in cls.voices_dict and voice.name.__contains__("English"):
+            elif "English" not in cls.voices_dict and "English" in voice.name:
                 cls.voices_dict["English"] = voice.id
                 foundvoices += 1
         return voices
