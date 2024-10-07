@@ -25,6 +25,10 @@ class SpeakerStatus:
     engine = None
     speak = None
     #
+    default_voice_id = None
+    current_lang = "German"
+    voices_dict = {}
+    #
     @staticmethod
     def is_windows_platform() -> bool:
         """True if system is Windows"""
@@ -35,8 +39,11 @@ class SpeakerStatus:
         """Tries to initialize py3-tts speaker"""
         try:
             cls.engine = pyttsx3.init()
-            voices = cls.engine.getProperty('voices')
-            cls.engine.setProperty('voice', voices[0].id)
+            #voices = cls.engine.getProperty('voices')
+            #cls.engine.setProperty('voice', voices[0].id)
+            voices = cls.prepareLanguages()
+            cls.default_voice_id = voices[0].id
+            cls.engine.setProperty('voice', cls.default_voice_id)
         except (RuntimeError, Exception):
             print("Sorry, pyttsx3 is not working.")
             # goal: if debug mode tell me, else keep quiet
@@ -79,6 +86,8 @@ class SpeakerStatus:
         try:
             if cls.engine:
                 #and not SpeakerStatus.debugSwitchOffSpeaker:
+                if not cls.current_lang in {"German", "system_default"} :
+                    cls.engine.setProperty('voice', cls.default_voice_id)
                 cls.engine.say(text)
                 cls.engine.runAndWait()
             elif cls.speak:
@@ -88,6 +97,22 @@ class SpeakerStatus:
                 cls.engine.stop()
             else:
                 pass
+
+    @classmethod
+    def talkInLanguage(cls, text, lang="system_default", rate = 200):
+        if not cls.engine:
+            if cls.speak:
+                cls.speak(text)
+                return
+        c = cls.voices_dict.get(lang)
+        if c:
+            cls.current_lang = lang
+            cls.engine.setProperty('voice', c)
+            cls.engine.setProperty('rate', rate)
+        else:
+            cls.engine.setProperty('voice', cls.default_voice_id)
+        cls.engine.say(text)
+        cls.engine.runAndWait()
 
     @classmethod
     def speakFaster(cls):
@@ -105,6 +130,24 @@ class SpeakerStatus:
         cls.engine.setProperty('rate', rate-50)
         print("Geschwindigkeit auf "+str(cls.engine.getProperty('rate')))
 
+    @classmethod
+    def prepareLanguages(cls):
+        """Gather voices and languages to be able to switch languages"""
+        voices = cls.engine.getProperty('voices')
+        foundvoices = 0
+        for voice in voices:
+            if foundvoices == 3:
+                break
+            if not "German" in cls.voices_dict and voice.name.__contains__("German"):
+                cls.voices_dict["German"] = voice.id
+                foundvoices += 1
+            if not "French" in cls.voices_dict and voice.name.__contains__("French"):
+                cls.voices_dict["French"] = voice.id
+                foundvoices += 1
+            elif not "English" in cls.voices_dict and voice.name.__contains__("English"):
+                cls.voices_dict["English"] = voice.id
+                foundvoices += 1
+        return voices
 
 # pylint: disable=invalid-name
 # pylint: enable=broad-exception-caught
