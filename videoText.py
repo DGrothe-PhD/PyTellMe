@@ -120,7 +120,7 @@ class RbbText:
                 self.lines.append(addline)
         except requests.exceptions.HTTPError as httpErr:
             message = f"Die Seite kann nicht angezeigt werden " + \
-             "(Fehler {httpErr.response.status_code})"
+             f"(Fehler {httpErr.response.status_code})"
             self.lines.append(message)
         except requests.exceptions.ConnectionError:
             self.lines.append(VideoTextUtils.pageNotAccessible)
