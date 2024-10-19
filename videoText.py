@@ -77,10 +77,7 @@ class RbbText:
             `contents` (Soup(), list of Soup(), NoneType): return object of Soup.find()
 
         Returns:
-            list of Soup() objects or empty list.\n
-            If Soup has not found anything, an empty list is returned.\n
-            If Soup has found exactly one entry, a list with that entry.\n
-            If Soup has found multiple entries, return `contents`
+            list of Soup() object(s) or empty list.\n
         """
         if isinstance(contents, list) and len(contents) > 0:
             return contents
@@ -122,15 +119,17 @@ class RbbText:
                         addline += " " + linkedPages[-1]
                 self.lines.append(addline)
         except requests.exceptions.HTTPError as httpErr:
-            print(f'HTTP Fehlermeldung: {httpErr}')
+            message = f"Die Seite kann nicht angezeigt werden " + \
+             "(Fehler {httpErr.response.status_code})"
+            self.lines.append(message)
         except requests.exceptions.ConnectionError:
-            print(VideoTextUtils.pageNotAccessible)
+            self.lines.append(VideoTextUtils.pageNotAccessible)
         except requests.exceptions.Timeout:
-            print("Zeitüberschreitung")
+            self.lines.append("Zeitüberschreitung")
         except requests.exceptions.RequestException as e:
-            print(f"Konnte Seite {self.api}... nicht aufrufen. \nFehler: {e}")
+            self.lines.append(f"Konnte Seite {self.api}... nicht aufrufen. \nFehler: {e}")
         except Exception as e:
-            print("Something went wrong.")
+            self.lines.append("Etwas lief schief...")
             print(f"Fehlermeldung: {e}")
     #
     def extractJumpingPages(self):

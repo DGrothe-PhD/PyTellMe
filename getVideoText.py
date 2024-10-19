@@ -23,7 +23,7 @@ class VTextStatus(VideoTextUtils):
     hasrun = False
     page = 100
     sub = 1
-    textNews = RbbText(page)
+    #textNews = RbbText(page)
     aliasesErste = {"1", "das erste", "ard"}
     aliasesNdr = {"nord", "ndr"}
     aliasesBayern = {"6", "bayern", "br"}
@@ -49,13 +49,13 @@ class VTextStatus(VideoTextUtils):
         station = input(userWhichVideotext + tellAvailableStations + "\n...:")
         #
         if station.lower() in VTextStatus.aliasesErste:
-            VTextStatus.textNews = ARDText(100)
+            VTextStatus.textNews = ARDText(VTextStatus.page)
         elif station.lower() in VTextStatus.aliasesNdr:
-            VTextStatus.textNews = NDRText(100)
+            VTextStatus.textNews = NDRText(VTextStatus.page)
         elif station.lower() in VTextStatus.aliasesBayern:
-            VTextStatus.textNews = BayernText(100)
+            VTextStatus.textNews = BayernText(VTextStatus.page)
         else:
-            pass
+            VTextStatus.textNews = RbbText(VTextStatus.page)
     #
     mapping = [ ('Ã¼', 'ü'), ('Ã¤', 'ä'), ('Ã¶', 'ö'), \
      ( 'Ã„', 'Ä'), ('Ã–', 'Ö'), ('Ãœ', 'Ü'), ('ÃŸ', 'ß') \
@@ -149,5 +149,8 @@ while VTextStatus.isRunning:
     except Exception as e:
         # HTTP error or anything
         printAndSay(f"Entschuldigung, etwas ist schiefgegangen.\nFehlermeldung:\n{e}")
+
+# Play bye-bye sound
+printAndSay("Bye bye")
 
 # pylint: enable=W0718
