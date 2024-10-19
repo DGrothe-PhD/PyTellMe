@@ -119,7 +119,7 @@ class RbbText:
                         addline += " " + linkedPages[-1]
                 self.lines.append(addline)
         except requests.exceptions.HTTPError as httpErr:
-            message = f"Die Seite kann nicht angezeigt werden " + \
+            message = "Die Seite kann nicht angezeigt werden " + \
              f"(Fehler {httpErr.response.status_code})"
             self.lines.append(message)
         except requests.exceptions.ConnectionError:
