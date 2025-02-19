@@ -48,6 +48,7 @@ class VTextStatus(VideoTextUtils):
         userWhichVideotext = "Welchen Sendetext möchten Sie aufrufen?\n[  Beispiele:  ]\n"
         station = input(userWhichVideotext + tellAvailableStations + "\n...:")
         #
+        # switch to chosen station.
         if station.lower() in VTextStatus.aliasesErste:
             VTextStatus.textNews = ARDText(VTextStatus.page)
         elif station.lower() in VTextStatus.aliasesNdr:
@@ -99,6 +100,9 @@ while VTextStatus.isRunning:
             speaker.speakSlower()
             continue
         if newpage == "":
+            continue
+        if newpage == "#":
+            VTextStatus.start()
             continue
         if VTextStatus.hasrun and (newpage == "."):
             printAndSay("Seite wird neu geladen")
