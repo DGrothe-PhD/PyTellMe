@@ -51,7 +51,7 @@ class RbbText:
      "x" : 600, \
      "w" : 160, \
     }
-    
+    #
     ballgamescorepages = { \
      252, 276
     }
