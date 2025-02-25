@@ -14,7 +14,7 @@ def printAndSay(text):
     speaker.talk(text)
 
 class VTextStatus(VideoTextUtils):
-    """settings and start"""
+    """videotext reader settings and start"""
     welcome = "Hallo, ich bin dein Videotext-Assistent.\n" + \
      "Eingabe Seitenzahl (dreistellig)," + \
      "Beenden durch die Eingabe 'stop'."
