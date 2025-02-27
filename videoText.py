@@ -55,6 +55,10 @@ class RbbText:
     ballgamescorepages = { \
      252, 276
     }
+    listOfBallGames = { \
+     "Fußball", "Handball", "Basketball", \
+     "Eishockey", "Hockey", "Volleyball" \
+    }
     #
     api = 'https://www.rbbtext.de/'
     #
@@ -157,16 +161,19 @@ class RbbText:
     #
     def appendContent(self):
         """process and prettify extracted text lines and append these to content"""
+        isBallGame = False
         for x in self.lines:
             xAsText = str(x)
             if len(xAsText) > 1 :
-                # quick first attempt for issue #26
                 # I am canceling the first line of the text with a timestamp here
                 # as a timestamp is not a score.
-                if self.currentPage in self.ballgamescorepages \
+                if any(sport in xAsText for sport in self.listOfBallGames):
+                    isBallGame = True
+                if isBallGame or self.currentPage in self.ballgamescorepages \
                  and not xAsText[0:2].isdigit() and not xAsText.strip().endswith(":"):
+                    xAsText = xAsText.replace("--:--", "noch kein Ergebnis")
                     xAsText = xAsText.replace("-:-", "noch kein Ergebnis")
-                    xAsText = xAsText.replace(":", " zu ")
+                    xAsText = re.sub(r"([0-9]{1,}):([0-9]{1,})", r"\1 zu \2", xAsText)
                 self.content += '\n' + xAsText
         if len(self.content) < 3:
             self.content += "Seite ist leer."
