@@ -1,6 +1,7 @@
 import re
 import requests
 from gazpacho import Soup
+from bs4 import BeautifulSoup
 
 # pylint: disable=R0903
 # pylint: disable=broad-except
@@ -114,7 +115,15 @@ class RbbText:
             peas = self.soup.find("span", {"class": "fg"}, partial=True)
             peasStyle = self.soup.find("span", {"class" : "style"}, partial=True)
             #
-            self.lines += [self.linefilter(x.text) for x in self.validateSoup(peas)]
+            # gazpacho extraction got stuck on false page links
+            # which are in fact numbers in disguise. The 690s (NBA) of ARD-Text have that.
+            # so I use bs4 for less boilerplate code.
+            for x in self.validateSoup(peas):
+                addline = self.linefilter( \
+                 BeautifulSoup(x.html, features="html.parser").text.strip() \
+                )
+                self.lines.append(addline)
+            #
             # gather info like 'Thema xyz on page 123'
             for x in self.validateSoup(peasStyle):
                 addline = self.linefilter(x.text)
@@ -167,11 +176,13 @@ class RbbText:
             if len(xAsText) > 1 :
                 # I am canceling the first line of the text with a timestamp here
                 # as a timestamp is not a score.
+                # trying without "and not xAsText[0:2].isdigit()" 
                 if any(sport in xAsText for sport in self.listOfBallGames):
                     isBallGame = True
                 if isBallGame or self.currentPage in self.ballgamescorepages \
-                 and not xAsText[0:2].isdigit() and not xAsText.strip().endswith(":"):
+                 and not xAsText.strip().endswith(":"):
                     xAsText = xAsText.replace("--:--", "noch kein Ergebnis")
+                    xAsText = re.sub(r"-\:-\s+\(-\:-\)", "noch kein Ergebnis", xAsText)
                     xAsText = xAsText.replace("-:-", "noch kein Ergebnis")
                     xAsText = re.sub(r"([0-9]{1,}):([0-9]{1,})", r"\1 zu \2", xAsText)
                 self.content += '\n' + xAsText
