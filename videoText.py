@@ -176,7 +176,6 @@ class RbbText:
             if len(xAsText) > 1 :
                 # I am canceling the first line of the text with a timestamp here
                 # as a timestamp is not a score.
-                # trying without "and not xAsText[0:2].isdigit()" 
                 if any(sport in xAsText for sport in self.listOfBallGames):
                     isBallGame = True
                 if isBallGame or self.currentPage in self.ballgamescorepages \
