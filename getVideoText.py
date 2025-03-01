@@ -131,9 +131,9 @@ while VTextStatus.isRunning:
         elif newpage[0] == '+':
             if VTextStatus.page < 899:
                 VTextStatus.page += 1
-        elif VTextStatus.textNews.hasTopicPage(newpage[0]):
+        elif VTextStatus.textNews.hasTopicPage(newpage):
             VTextStatus.hasrun = True
-            VTextStatus.textNews.browseTopicPage(newpage[0])
+            VTextStatus.textNews.browseTopicPage(newpage)
             VTextStatus.page = VTextStatus.textNews.currentPage
             printAndSay(f"Blättern zu Seite {VTextStatus.page}")
             printAndSay(VTextStatus.textNews.content)
