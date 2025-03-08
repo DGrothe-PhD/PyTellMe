@@ -94,6 +94,34 @@ class RbbText:
             return [contents]
         return []
     #
+    def __extractReadableText(self):
+        peas = self.soup.find("span", {"class": "fg"}, partial=True)
+        # gazpacho extraction got stuck on false page links
+        # which are in fact numbers in disguise. The 690s (NBA) of ARD-Text have that.
+        # so I use bs4 for less boilerplate code.
+        for x in self.validateSoup(peas):
+            foundRunningMatch = 'fgm bgb' in x.html
+            addline = self.linefilter( \
+             BeautifulSoup(x.html, features="html.parser").text.strip() \
+            )
+            if foundRunningMatch:
+                addline = re.sub(r'(\d+\:\d+)', r'\1 (läuft) ', addline)
+            self.lines.append(addline)
+    #
+    def __extractLinkedPages(self):
+        peasStyle = self.soup.find("span", {"class" : "style"}, partial=True)
+        # gather info like 'Thema xyz on page 123'
+        for x in self.validateSoup(peasStyle):
+            addline = self.linefilter(x.text)
+            alist = x.find("a")
+            alist = self.validateSoup(alist)
+        #
+            for y in alist:
+                if len(y.html) > 1:
+                    linkedPages = re.findall(r'\d+', y.html)
+                    addline += " " + linkedPages[-1]
+            self.lines.append(addline)
+    #
     def extractPage(self, page: int, sub=1):
         """Requests content of videotext at page `page`, subpage `sub`/n
 
@@ -112,32 +140,11 @@ class RbbText:
             res.raise_for_status()
             #gazpacho
             self.soup = Soup(res.text)
-            peas = self.soup.find("span", {"class": "fg"}, partial=True)
-            peasStyle = self.soup.find("span", {"class" : "style"}, partial=True)
             #
-            # gazpacho extraction got stuck on false page links
-            # which are in fact numbers in disguise. The 690s (NBA) of ARD-Text have that.
-            # so I use bs4 for less boilerplate code.
-            for x in self.validateSoup(peas):
-                foundRunningMatch = 'fgm bgb' in x.html
-                addline = self.linefilter( \
-                 BeautifulSoup(x.html, features="html.parser").text.strip() \
-                )
-                if foundRunningMatch:
-                    addline = re.sub(r'(\d+\:\d+)', r'\1 (läuft) ', addline)
-                self.lines.append(addline)
+            self.__extractReadableText()
             #
-            # gather info like 'Thema xyz on page 123'
-            for x in self.validateSoup(peasStyle):
-                addline = self.linefilter(x.text)
-                alist = x.find("a")
-                alist = self.validateSoup(alist)
+            self.__extractLinkedPages()
             #
-                for y in alist:
-                    if len(y.html) > 1:
-                        linkedPages = re.findall(r'\d+', y.html)
-                        addline += " " + linkedPages[-1]
-                self.lines.append(addline)
         except requests.exceptions.HTTPError as httpErr:
             message = "Die Seite kann nicht angezeigt werden " + \
              f"(Fehler {httpErr.response.status_code})"
