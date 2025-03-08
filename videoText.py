@@ -119,9 +119,12 @@ class RbbText:
             # which are in fact numbers in disguise. The 690s (NBA) of ARD-Text have that.
             # so I use bs4 for less boilerplate code.
             for x in self.validateSoup(peas):
+                foundRunningMatch = 'fgm bgb' in x.html
                 addline = self.linefilter( \
                  BeautifulSoup(x.html, features="html.parser").text.strip() \
                 )
+                if foundRunningMatch:
+                    addline = re.sub(r'(\d+\:\d+)', r'\1 (läuft) ', addline)
                 self.lines.append(addline)
             #
             # gather info like 'Thema xyz on page 123'
